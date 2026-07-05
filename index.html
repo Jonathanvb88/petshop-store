@@ -389,7 +389,6 @@
           <select id="pf-pet" required>
             <option value="Dog">Dog</option>
             <option value="Cat">Cat</option>
-            <option value="Small Pet">Small Pet</option>
           </select>
         </div>
         <div class="field">
@@ -440,11 +439,11 @@
 (function(){
   "use strict";
 
-  const STORAGE_KEY = "rbp_products_v2";
+  const STORAGE_KEY = "rbp_products_v3";
   const CART_KEY = "rbp_cart_v2";
 
   const CATEGORY_TILE = { Food:"#FFE8D6", Toys:"#FFF3C4", Grooming:"#D8E9FF", Accessories:"#FBD7EC", Health:"#D6F5E8", Beds:"#E6DBFF" };
-  const PET_EMOJI = { Dog:"🐶", Cat:"🐱", "Small Pet":"🐹" };
+  const PET_EMOJI = { Dog:"🐶", Cat:"🐱" };
   const TRUST_BADGES = [
     {icon:"🚚", text:"Free shipping on orders over R899"},
     {icon:"↩", text:"30-day money-back guarantee"},
@@ -475,9 +474,8 @@
     {id:"p12", sku:"RBP-HL-002", name:"Joint Support Chews", pet:"Dog", category:"Health", price:429, stock:1, icon:"🦴", desc:"Glucosamine + turmeric, chicken flavored.", specs:["Glucosamine & chondroitin","Turmeric for inflammation support","Chicken flavored","90-chew supply"]},
     {id:"p13", sku:"RBP-BD-001", name:"Linen Bolster Bed (M)", pet:"Dog", category:"Beds", price:1149, stock:11, icon:"🛏️", desc:"Removable washable cover, memory foam base.", specs:["Memory foam base","Removable machine-washable cover","Water-resistant liner","Fits dogs up to 50 lbs"]},
     {id:"p14", sku:"RBP-BD-002", name:"Cave Bed", pet:"Cat", category:"Beds", price:749, stock:7, icon:"🐈", desc:"Wool felt, hand-shaped, holds its dome shape for years.", specs:["100% wool felt","Hand-shaped, holds form","Machine washable cover","One size fits most cats"]},
-    {id:"p15", sku:"RBP-FD-004", name:"Timothy Hay Feeder Pack", pet:"Small Pet", category:"Food", price:269, stock:24, icon:"🌾", desc:"Sun-cured timothy hay, high fiber, small-batch baled.", specs:["Sun-cured timothy hay","High fiber content","Small-batch baled","5 lb resealable bag"]},
-    {id:"p16", sku:"RBP-TY-004", name:"Silent Spin Wheel", pet:"Small Pet", category:"Toys", price:399, stock:13, icon:"🎡", desc:"Ultra-quiet bearing system for nighttime runners.", specs:["Silent bearing system","11 inch running surface","Free-standing, no stand needed","Easy-clean solid surface"]},
-    {id:"p17", sku:"RBP-BD-003", name:"Fleece Cage Liner", pet:"Small Pet", category:"Beds", price:329, stock:16, icon:"🧺", desc:"Absorbent fleece top layer over a leak-proof base.", specs:["Absorbent top layer","Leak-proof waterproof base","Machine washable","Fits standard C&C cages"]},
+    {id:"p20", sku:"RBP-HL-003", name:"Flea & Tick Spot Treatment", pet:"Dog", category:"Health", price:249, stock:22, icon:"💧", desc:"Monthly topical protection against fleas, ticks, and mites.", specs:["Monthly application","Waterproof after 24 hours","Vet-formulated","3-month supply"]},
+    {id:"p21", sku:"RBP-HL-004", name:"Probiotic Digestive Chews", pet:"Cat", category:"Health", price:219, stock:14, icon:"🌿", desc:"Daily chew to support gut health and reduce hairball frequency.", specs:["Daily digestive support","Reduces hairball frequency","Chicken flavored","60-chew supply"]},
     {id:"p18", sku:"RBP-AC-003", name:"Sisal Scratching Post", pet:"Cat", category:"Accessories", price:599, stock:8, icon:"🐈", desc:"Natural sisal wrap on a weighted, wobble-free base.", specs:["Natural sisal rope wrap","Weighted non-wobble base","32 inch height","Includes hanging toy"]},
     {id:"p19", sku:"RBP-TY-005", name:"Catnip Mice 3-Pack", pet:"Cat", category:"Toys", price:139, stock:38, icon:"🐭", desc:"Organic catnip stuffed into durable felt mice.", specs:["Organic catnip filling","Durable felt construction","Set of 3","Machine washable"]}
   ];
@@ -571,11 +569,17 @@
     bar.innerHTML = "";
     pets.forEach(pt=>{
       const b = document.createElement("button");
-      b.className = "pet-tab" + (pt===activePet ? " active" : "");
+      const isActive = pt===activePet && activeCategory !== "Health";
+      b.className = "pet-tab" + (isActive ? " active" : "");
       b.innerHTML = (pt==="All" ? "🐾" : PET_EMOJI[pt]||"🐾") + " " + pt;
       b.addEventListener("click", ()=>{ activePet = pt; activeCategory="All"; goToShop(); });
       bar.appendChild(b);
     });
+    const medBtn = document.createElement("button");
+    medBtn.className = "pet-tab" + (activeCategory==="Health" ? " active" : "");
+    medBtn.innerHTML = "💊 Medical Supplies";
+    medBtn.addEventListener("click", ()=>{ activePet = "All"; activeCategory = "Health"; goToShop(); });
+    bar.appendChild(medBtn);
   }
 
   function renderPetTiles(){
@@ -590,6 +594,12 @@
       tile.addEventListener("click", ()=>{ activePet = pt; activeCategory="All"; goToShop(); });
       wrap.appendChild(tile);
     });
+    const medCount = products.filter(p=>p.category==="Health").length;
+    const medTile = document.createElement("button");
+    medTile.className = "pet-tile";
+    medTile.innerHTML = `<span class="emoji">💊</span><span class="name">Medical Supplies</span><br/><span class="count">${medCount} products</span>`;
+    medTile.addEventListener("click", ()=>{ activePet="All"; activeCategory="Health"; goToShop(); });
+    wrap.appendChild(medTile);
     const allTile = document.createElement("button");
     allTile.className = "pet-tile";
     allTile.innerHTML = `<span class="emoji">🐾</span><span class="name">Shop All</span><br/><span class="count">${products.length} products</span>`;
