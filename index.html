@@ -400,6 +400,7 @@
             <option value="Accessories">Accessories</option>
             <option value="Health">Health</option>
             <option value="Beds">Beds</option>
+            <option value="Clothing">Clothing</option>
           </select>
         </div>
         <div class="field"><label>Icon (emoji fallback)</label><input id="pf-icon" placeholder="🦴" maxlength="4" /></div>
@@ -439,10 +440,10 @@
 (function(){
   "use strict";
 
-  const STORAGE_KEY = "rbp_products_v3";
+  const STORAGE_KEY = "rbp_products_v4";
   const CART_KEY = "rbp_cart_v2";
 
-  const CATEGORY_TILE = { Food:"#FFE8D6", Toys:"#FFF3C4", Grooming:"#D8E9FF", Accessories:"#FBD7EC", Health:"#D6F5E8", Beds:"#E6DBFF" };
+  const CATEGORY_TILE = { Food:"#FFE8D6", Toys:"#FFF3C4", Grooming:"#D8E9FF", Accessories:"#FBD7EC", Health:"#D6F5E8", Beds:"#E6DBFF", Clothing:"#FFE0EC" };
   const PET_EMOJI = { Dog:"🐶", Cat:"🐱" };
   const TRUST_BADGES = [
     {icon:"🚚", text:"Free shipping on orders over R899"},
@@ -470,6 +471,10 @@
     {id:"p8",  sku:"RBP-GR-002", name:"Slicker Brush", pet:"Cat", category:"Grooming", price:289, stock:2, icon:"🪮", desc:"Fine pins for undercoat season. Handle fits any grip.", specs:["Fine stainless pins","Ergonomic non-slip handle","Self-cleaning button release","Best for medium-long coats"]},
     {id:"p9",  sku:"RBP-AC-001", name:"Waxed Canvas Leash", pet:"Dog", category:"Accessories", price:529, stock:15, icon:"🦮", desc:"Hand-waxed cotton canvas, brass hardware, 6ft.", specs:["Hand-waxed cotton canvas","Solid brass clasp","6 ft length","Padded handle"]},
     {id:"p10", sku:"RBP-AC-002", name:"Engraved Brass Tag", pet:"Dog", category:"Accessories", price:239, stock:60, icon:"🏷️", desc:"Free engraving, ships in 2 days.", specs:["Solid brass, won't rust","Free custom engraving","Fits any standard collar ring","Ships within 2 business days"]},
+    {id:"p22", sku:"RBP-CL-001", name:"Packable Rain Jacket", pet:"Dog", category:"Clothing", price:349, stock:19, icon:"🧥", desc:"Waterproof shell with a reflective strip for evening walks.", specs:["Fully waterproof shell","Reflective strip for visibility","Adjustable belly strap","Machine washable"]},
+    {id:"p23", sku:"RBP-CL-002", name:"Chunky Knit Sweater", pet:"Dog", category:"Clothing", price:299, stock:26, icon:"🦺", desc:"Soft knit layer for chilly mornings, easy on and off.", specs:["Soft acrylic-wool blend knit","Stretch neck for easy dressing","Machine washable, lay flat to dry","Sizes XS through XL"]},
+    {id:"p24", sku:"RBP-CL-003", name:"Everyday Bandana Set", pet:"Dog", category:"Clothing", price:129, stock:44, icon:"🎀", desc:"Set of 3 reversible bandanas that slide onto any collar.", specs:["Set of 3 reversible prints","Slides onto existing collar","100% cotton","Machine washable"]},
+    {id:"p25", sku:"RBP-CL-004", name:"Summer Cooling Vest", pet:"Dog", category:"Clothing", price:379, stock:12, icon:"🎽", desc:"Evaporative cooling fabric for hot-weather walks and hikes.", specs:["Evaporative cooling fabric","Just soak, wring, and wear","Adjustable Velcro closure","Stays cool for up to 3 hours"]},
     {id:"p11", sku:"RBP-HL-001", name:"Salmon Oil Supplement", pet:"Dog", category:"Health", price:349, stock:9, icon:"💊", desc:"Omega-3 for coat health, pump bottle, 16oz.", specs:["Wild-caught salmon oil","Supports coat & skin health","Easy pump dispenser","16 oz bottle"]},
     {id:"p12", sku:"RBP-HL-002", name:"Joint Support Chews", pet:"Dog", category:"Health", price:429, stock:1, icon:"🦴", desc:"Glucosamine + turmeric, chicken flavored.", specs:["Glucosamine & chondroitin","Turmeric for inflammation support","Chicken flavored","90-chew supply"]},
     {id:"p13", sku:"RBP-BD-001", name:"Linen Bolster Bed (M)", pet:"Dog", category:"Beds", price:1149, stock:11, icon:"🛏️", desc:"Removable washable cover, memory foam base.", specs:["Memory foam base","Removable machine-washable cover","Water-resistant liner","Fits dogs up to 50 lbs"]},
