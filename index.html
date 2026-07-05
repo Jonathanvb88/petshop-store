@@ -400,7 +400,22 @@
             <option value="Beds">Beds</option>
           </select>
         </div>
-        <div class="field"><label>Icon (emoji)</label><input id="pf-icon" placeholder="🦴" maxlength="4" /></div>
+        <div class="field"><label>Icon (emoji fallback)</label><input id="pf-icon" placeholder="🦴" maxlength="4" /></div>
+      </div>
+      <div class="field">
+        <label>Product photo</label>
+        <div style="display:flex; gap:12px; align-items:flex-start;">
+          <div id="pf-image-preview" style="width:64px;height:64px;border-radius:10px;background:#ffffff0c;border:1px solid #ffffff26;display:flex;align-items:center;justify-content:center;font-size:1.6rem;overflow:hidden;flex-shrink:0;">🐾</div>
+          <div style="flex:1;">
+            <input id="pf-image-url" type="text" placeholder="Paste an image URL..." />
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <button type="button" class="btn-sm" id="pf-upload-trigger">Upload photo</button>
+              <button type="button" class="btn-sm" id="pf-image-clear">Remove photo</button>
+              <input type="file" id="pf-image-file" accept="image/*" />
+            </div>
+            <div class="hint">Upload a JPG or PNG (stored right in this browser, no server needed), or paste a link instead. Leave blank to use the emoji icon.</div>
+          </div>
+        </div>
       </div>
       <div class="field-row">
         <div class="field"><label>Price (USD) *</label><input id="pf-price" type="number" step="0.01" min="0" required /></div>
@@ -520,6 +535,13 @@
   function byId(id){ return products.find(p => p.id === id); }
   function uid(){ return "p" + Math.random().toString(36).slice(2,9); }
   function tileColor(cat){ return CATEGORY_TILE[cat] || "#3c5a3f"; }
+  function attrSafe(v){ return String(v).replace(/"/g,"&quot;"); }
+  function mediaInner(p){
+    if(p.image){
+      return `<img src="${attrSafe(p.image)}" alt="${escapeHtml(p.name||'')}" style="width:100%;height:100%;object-fit:cover;" onerror="this.outerHTML='${(p.icon||'🐾')}';" />`;
+    }
+    return p.icon || "🐾";
+  }
   function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
   function toast(msg){
     const host = document.getElementById("toast-host");
@@ -616,7 +638,7 @@
       const rc = getReviewCount(p);
       card.innerHTML = `
         <div class="punch"></div>
-        <div class="tile" style="background:${tileColor(p.category)}">${p.icon || "🐾"}</div>
+        <div class="tile" style="background:${tileColor(p.category)}; overflow:hidden;">${mediaInner(p)}</div>
         <div class="cat">${p.category} · ${p.pet}</div>
         <h3>${escapeHtml(p.name)}</h3>
         ${rc>0 ? `<div><span class="stars">${starString(getRating(p))}</span><span class="review-count">(${rc})</span></div>` : `<div class="no-reviews">No reviews yet</div>`}
@@ -665,7 +687,11 @@
     const low = p.stock > 0 && p.stock < 5;
     const rating = getRating(p);
     const rc = getReviewCount(p);
-    const gallery = [p.icon, "📦", "🏷️", PET_EMOJI[p.pet]||"🐾"];
+    const gallery = [];
+    if(p.image) gallery.push({type:"image", value:p.image});
+    gallery.push({type:"emoji", value:p.icon||"🐾"});
+    gallery.push({type:"emoji", value:"📦"});
+    gallery.push({type:"emoji", value:"🏷️"});
     const specs = p.specs && p.specs.length ? p.specs : ["No additional specs listed for this item."];
     const reviews = getReviews(p);
 
@@ -673,9 +699,9 @@
     content.innerHTML = `
       <div class="pdp-grid">
         <div>
-          <div class="gallery-main" id="gallery-main" style="background:${tileColor(p.category)}">${gallery[0]}</div>
+          <div class="gallery-main" id="gallery-main" style="background:${tileColor(p.category)}; overflow:hidden;">${gallery[0].type==='image' ? `<img src="${attrSafe(gallery[0].value)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:cover;" />` : gallery[0].value}</div>
           <div class="gallery-thumbs" id="gallery-thumbs">
-            ${gallery.map((g,i)=>`<button data-thumb="${i}" class="${i===0?'active':''}" style="background:${tileColor(p.category)}">${g}</button>`).join("")}
+            ${gallery.map((g,i)=>`<button data-thumb="${i}" class="${i===0?'active':''}" style="background:${tileColor(p.category)}; overflow:hidden;">${g.type==='image' ? `<img src="${attrSafe(g.value)}" alt="" style="width:100%;height:100%;object-fit:cover;" />` : g.value}</button>`).join("")}
           </div>
         </div>
         <div class="pdp-info">
@@ -720,7 +746,9 @@
 
     content.querySelectorAll("[data-tab]").forEach(b=> b.addEventListener("click", ()=>{ activeTab = b.dataset.tab; content.querySelectorAll(".tab-btn").forEach(x=>x.classList.remove("active")); b.classList.add("active"); renderTabPanel(p, specs, reviews, rating, rc); }));
     content.querySelectorAll("[data-thumb]").forEach(b=> b.addEventListener("click", ()=>{
-      document.getElementById("gallery-main").textContent = gallery[+b.dataset.thumb];
+      const g = gallery[+b.dataset.thumb];
+      const main = document.getElementById("gallery-main");
+      main.innerHTML = g.type==='image' ? `<img src="${attrSafe(g.value)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:cover;" />` : g.value;
       content.querySelectorAll("[data-thumb]").forEach(x=>x.classList.remove("active"));
       b.classList.add("active");
     }));
@@ -772,7 +800,7 @@
       card.className = "tag-card";
       card.innerHTML = `
         <div class="punch"></div>
-        <div class="tile" style="background:${tileColor(r.category)}">${r.icon||"🐾"}</div>
+        <div class="tile" style="background:${tileColor(r.category)}; overflow:hidden;">${mediaInner(r)}</div>
         <div class="cat">${r.category} · ${r.pet}</div>
         <h3>${escapeHtml(r.name)}</h3>
         ${rc>0 ? `<div><span class="stars">${starString(getRating(r))}</span><span class="review-count">(${rc})</span></div>` : `<div class="no-reviews">No reviews yet</div>`}
@@ -818,7 +846,7 @@
       const row = document.createElement("div");
       row.className = "cart-line";
       row.innerHTML = `
-        <div class="tile-sm" style="background:${tileColor(p.category)}">${p.icon||"🐾"}</div>
+        <div class="tile-sm" style="background:${tileColor(p.category)}; overflow:hidden;">${mediaInner(p)}</div>
         <div class="info">
           <h4>${escapeHtml(p.name)}</h4>
           <span class="mono" style="color:var(--sage); font-size:0.82rem;">${money(p.price)}</span>
@@ -863,7 +891,7 @@
       const tr = document.createElement("tr");
       const low = p.stock < 5;
       tr.innerHTML = `
-        <td><span class="row-icon" style="background:${tileColor(p.category)}">${p.icon||"🐾"}</span>${escapeHtml(p.name)}</td>
+        <td><span class="row-icon" style="background:${tileColor(p.category)}; overflow:hidden;">${mediaInner(p)}</span>${escapeHtml(p.name)}</td>
         <td>${p.pet}</td>
         <td>${p.category}</td>
         <td class="mono" style="color:var(--sage);">${escapeHtml(p.sku)}</td>
@@ -893,9 +921,22 @@
     toast("Product deleted");
   }
 
+  let pfImageData = null;
+
+  function updatePfPreview(){
+    const preview = document.getElementById("pf-image-preview");
+    const iconVal = document.getElementById("pf-icon").value.trim() || "🐾";
+    if(pfImageData){
+      preview.innerHTML = `<img src="${attrSafe(pfImageData)}" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.textContent='${iconVal}';" />`;
+    } else {
+      preview.textContent = iconVal;
+    }
+  }
+
   function openProductForm(id){
     const form = document.getElementById("product-form");
     form.reset();
+    pfImageData = null;
     if(id){
       const p = byId(id);
       document.getElementById("pf-title").textContent = "Edit product";
@@ -909,10 +950,14 @@
       document.getElementById("pf-stock").value = p.stock;
       document.getElementById("pf-desc").value = p.desc || "";
       document.getElementById("pf-specs").value = (p.specs||[]).join("\n");
+      pfImageData = p.image || null;
+      document.getElementById("pf-image-url").value = (p.image && !p.image.startsWith("data:")) ? p.image : "";
     } else {
       document.getElementById("pf-title").textContent = "Add product";
       document.getElementById("pf-id").value = "";
+      document.getElementById("pf-image-url").value = "";
     }
+    updatePfPreview();
     document.getElementById("product-form-scrim").classList.add("open");
   }
   function closeProductForm(){ document.getElementById("product-form-scrim").classList.remove("open"); }
@@ -929,6 +974,7 @@
       pet: document.getElementById("pf-pet").value,
       category: document.getElementById("pf-category").value,
       icon: document.getElementById("pf-icon").value.trim() || "🐾",
+      image: pfImageData || null,
       price: parseFloat(document.getElementById("pf-price").value) || 0,
       stock: parseInt(document.getElementById("pf-stock").value) || 0,
       desc: document.getElementById("pf-desc").value.trim(),
@@ -941,6 +987,7 @@
     saveProducts(); renderAll(); closeProductForm();
     toast(idx >= 0 ? "Product updated" : "Product added");
   }
+
 
   // ---------- CSV ----------
   function parseCSV(text){
@@ -964,7 +1011,7 @@
   function csvEscape(v){ v = String(v ?? ""); if(/[",\n]/.test(v)) return '"' + v.replace(/"/g,'""') + '"'; return v; }
 
   function exportCSV(){
-    const headers = ["sku","name","pet","category","price","stock","icon","desc","specs"];
+    const headers = ["sku","name","pet","category","price","stock","icon","image","desc","specs"];
     const lines = [headers.join(",")];
     products.forEach(p=>{
       lines.push(headers.map(h=> h==="specs" ? csvEscape((p.specs||[]).join(" | ")) : csvEscape(p[h])).join(","));
@@ -998,6 +1045,7 @@
           price: parseFloat(rec.price) || 0,
           stock: parseInt(rec.stock) || 0,
           icon: rec.icon || "🐾",
+          image: rec.image || null,
           desc: rec.desc || rec.description || "",
           specs: rec.specs ? rec.specs.split("|").map(s=>s.trim()).filter(Boolean) : [],
           _isNew: existingIdx < 0
@@ -1037,6 +1085,31 @@
   document.getElementById("pf-cancel").addEventListener("click", closeProductForm);
   document.getElementById("product-form-scrim").addEventListener("click", (e)=>{ if(e.target.id === "product-form-scrim") closeProductForm(); });
   document.getElementById("product-form").addEventListener("submit", saveProductForm);
+  document.getElementById("pf-icon").addEventListener("input", ()=>{ if(!pfImageData) updatePfPreview(); });
+  document.getElementById("pf-image-url").addEventListener("input", (e)=>{
+    const val = e.target.value.trim();
+    pfImageData = val || null;
+    updatePfPreview();
+  });
+  document.getElementById("pf-upload-trigger").addEventListener("click", ()=> document.getElementById("pf-image-file").click());
+  document.getElementById("pf-image-file").addEventListener("change", (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    if(file.size > 2*1024*1024){ toast("Please use an image under 2MB"); e.target.value=""; return; }
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      pfImageData = ev.target.result;
+      document.getElementById("pf-image-url").value = "";
+      updatePfPreview();
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  });
+  document.getElementById("pf-image-clear").addEventListener("click", ()=>{
+    pfImageData = null;
+    document.getElementById("pf-image-url").value = "";
+    updatePfPreview();
+  });
 
   document.getElementById("btn-export").addEventListener("click", exportCSV);
   document.getElementById("btn-import-trigger").addEventListener("click", ()=> document.getElementById("csv-input").click());
