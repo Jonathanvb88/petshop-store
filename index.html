@@ -346,6 +346,18 @@
   .admin-mode-bar button{ background:var(--mustard); color:#1c2018; border:none; padding:6px 14px; border-radius:999px; font-weight:700; font-size:0.8rem; white-space:nowrap; }
   .admin-mode-bar button:hover{ background:var(--mustard-dim); }
 
+  .login-portal{ min-height:70vh; display:flex; align-items:center; justify-content:center; padding:40px 24px; }
+  .login-card{ background:var(--card); border:1px solid var(--card-line); border-radius:18px; padding:40px 34px; max-width:380px; width:100%; text-align:center; }
+  .login-stamp{ width:52px; height:52px; border-radius:50%; background:var(--mustard); display:flex; align-items:center; justify-content:center; font-size:1.4rem; margin:0 auto 18px; }
+  .login-card h1{ font-size:1.5rem; margin:0 0 8px; }
+  .login-card .sub{ color:var(--sage); font-size:0.85rem; line-height:1.5; margin-bottom:26px; }
+  .login-card form{ text-align:left; }
+  .login-card .field{ margin-bottom:14px; }
+  .login-error{ color:var(--rust-dim); font-size:0.82rem; min-height:1.2em; margin-bottom:8px; text-align:left; }
+  .login-hint{ margin-top:18px; font-size:0.78rem; color:var(--sage); background:#0000000a; border-radius:8px; padding:10px; }
+  .login-hint code{ font-family:'JetBrains Mono',monospace; color:var(--mustard-dim); font-weight:700; }
+  #login-back{ margin-top:14px; }
+
   .wishlist-btn{ background:transparent; color:var(--rust-dim); border:1.5px solid var(--card-line); }
   .wishlist-btn .cart-count{ background:var(--rust-dim); color:#fff; }
   .wishlist-btn:hover{ border-color:var(--rust-dim); }
@@ -461,7 +473,10 @@
 <main id="admin-view" class="hide">
   <div class="admin-mode-bar">
     <span>🔧 Admin mode — you're viewing the store owner dashboard</span>
-    <button id="exit-admin-btn">Exit to shop →</button>
+    <div style="display:flex; gap:8px;">
+      <button id="admin-logout-btn" style="background:transparent; border:1px solid #ffffff40; color:#FAF9FF;">Log out</button>
+      <button id="exit-admin-btn">Exit to shop →</button>
+    </div>
   </div>
   <div class="admin-wrap wrap">
 
@@ -642,6 +657,25 @@
 <!-- ============ POLICY / INFO VIEW ============ -->
 <main id="policy-view" class="hide">
   <div class="simple-page wrap policy-page" id="policy-content"></div>
+</main>
+
+<!-- ============ ADMIN LOGIN VIEW ============ -->
+<main id="admin-login-view" class="hide">
+  <div class="login-portal">
+    <div class="login-card">
+      <div class="login-stamp">🐾</div>
+      <h1>Owner portal</h1>
+      <p class="sub">This is a demo login — no real accounts are created, and nothing here is truly secure.</p>
+      <form id="admin-login-form">
+        <div class="field"><label>Email</label><input id="login-email" type="email" placeholder="owner@rainbowspets.example" /></div>
+        <div class="field"><label>Password</label><input id="login-password" type="password" placeholder="Enter password" required /></div>
+        <div id="login-error" class="login-error"></div>
+        <button type="submit" class="btn-primary" style="width:100%;">Log in</button>
+      </form>
+      <div class="login-hint">Demo password: <code id="login-demo-pw"></code></div>
+      <button class="link-btn" id="login-back">← Back to shop</button>
+    </div>
+  </div>
 </main>
 
 <footer class="site wrap">
@@ -1987,15 +2021,49 @@
   // ---------- view switching ----------
   function showView(view){
     currentView = view;
-    ["shop","pdp","admin","orders","wishlist","policy"].forEach(v=>{
+    ["shop","pdp","admin","orders","wishlist","policy","admin-login"].forEach(v=>{
       const el = document.getElementById(v+"-view");
       if(el) el.classList.toggle("hide", view!==v);
     });
-    document.getElementById("nav-admin").classList.toggle("active", view==="admin");
+    document.getElementById("nav-admin").classList.toggle("active", view==="admin" || view==="admin-login");
     document.getElementById("nav-shop").classList.toggle("active", view==="shop" || view==="pdp");
   }
   function goToShop(pushHash){ showView("shop"); if(pushHash!==false) setHash("#/"); renderPetTabs(); renderPetTiles(); renderHero(); renderShopBreadcrumb(); renderFilters(); renderGrid(); window.scrollTo({top:0, behavior:"instant"}); }
+
+  // ---------- admin login (demo gate, not real security) ----------
+  const ADMIN_SESSION_KEY = "rbp_admin_session_v1";
+  const DEMO_ADMIN_PASSWORD = "rainbow2026";
+  function isAdminAuthed(){ return sessionStorage.getItem(ADMIN_SESSION_KEY) === "yes"; }
+  function requestAdminAccess(pushHash){
+    if(isAdminAuthed()) showAdmin(pushHash);
+    else showAdminLogin(pushHash);
+  }
+  function showAdminLogin(pushHash){
+    showView("admin-login");
+    if(pushHash!==false) setHash("#/admin");
+    document.getElementById("login-demo-pw").textContent = DEMO_ADMIN_PASSWORD;
+    document.getElementById("login-error").textContent = "";
+    document.getElementById("admin-login-form").reset();
+    window.scrollTo({top:0, behavior:"instant"});
+  }
+  function handleAdminLogin(e){
+    e.preventDefault();
+    const pw = document.getElementById("login-password").value;
+    if(pw === DEMO_ADMIN_PASSWORD){
+      sessionStorage.setItem(ADMIN_SESSION_KEY, "yes");
+      showAdmin();
+    } else {
+      document.getElementById("login-error").textContent = "That password isn't right. Try the demo password shown below.";
+    }
+  }
+  function adminLogout(){
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    toast("Logged out of admin");
+    goToShop();
+  }
+
   function showAdmin(pushHash){
+    if(!isAdminAuthed()){ showAdminLogin(pushHash); return; }
     showView("admin");
     if(pushHash!==false) setHash("#/admin");
     renderAdmin();
@@ -2013,7 +2081,7 @@
     const hash = location.hash.replace(/^#\/?/, "");
     const parts = hash.split("/").filter(Boolean);
     if(parts[0] === "product" && parts[1] && byId(parts[1])){ openProductPage(parts[1], false); }
-    else if(parts[0] === "admin"){ showAdmin(false); }
+    else if(parts[0] === "admin"){ requestAdminAccess(false); }
     else if(parts[0] === "orders"){ showOrdersView(false); }
     else if(parts[0] === "wishlist"){ showWishlistView(false); }
     else if(parts[0] === "policy" && parts[1]){ showPolicyView(parts[1], false); }
@@ -2131,8 +2199,11 @@
 
   // ---------- wire up ----------
   document.getElementById("nav-shop").addEventListener("click", ()=> goToShop());
-  document.getElementById("nav-admin").addEventListener("click", ()=> showAdmin());
+  document.getElementById("nav-admin").addEventListener("click", ()=> requestAdminAccess());
   document.getElementById("exit-admin-btn").addEventListener("click", ()=> goToShop());
+  document.getElementById("admin-logout-btn").addEventListener("click", adminLogout);
+  document.getElementById("admin-login-form").addEventListener("submit", handleAdminLogin);
+  document.getElementById("login-back").addEventListener("click", ()=> goToShop());
   document.getElementById("open-cart").addEventListener("click", openCart);
   document.getElementById("close-cart").addEventListener("click", closeCart);
   document.getElementById("cart-scrim").addEventListener("click", closeCart);
