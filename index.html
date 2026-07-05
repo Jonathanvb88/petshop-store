@@ -246,9 +246,9 @@
   .banner-controls .field{ margin-bottom:14px; }
 
   /* ---------- live site banner ---------- */
-  .site-banner{ max-width:1180px; margin:0 auto 8px; padding:0 24px; border-radius:0; height:280px; position:relative; }
-  .site-banner-inner{ width:100%; height:100%; border-radius:16px; overflow:hidden; }
-  .site-banner video, .site-banner img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .site-banner{ max-width:1180px; margin:20px auto 8px; padding:0 24px; border-radius:0; height:280px; position:relative; }
+  .site-banner-inner{ width:100%; height:100%; border-radius:16px; overflow:hidden; background:linear-gradient(135deg, var(--bg-soft), var(--card)); }
+  .site-banner video, .site-banner img{ width:100%; height:100%; object-fit:cover; display:block; background:var(--bg-soft); }
   @media (max-width:640px){ .site-banner{ height:180px; } }
   .stat-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:30px; }
   .stat-card{ background:var(--card); border:1px solid var(--card-line); border-radius:12px; padding:18px 20px; }
@@ -326,6 +326,8 @@
 
 <!-- ============ SHOP VIEW ============ -->
 <main id="shop-view">
+  <div class="site-banner hide" id="site-banner"></div>
+
   <section class="hero" id="hero-section">
     <div class="wrap hero-inner">
       <div>
@@ -339,8 +341,6 @@
       </div>
     </div>
   </section>
-
-  <div class="site-banner hide" id="site-banner"></div>
 
   <div class="pet-tiles wrap" id="pet-tiles"></div>
 
@@ -394,6 +394,24 @@
             <button type="button" class="btn-sm" id="banner-remove">Remove banner</button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="banner-panel">
+      <div class="admin-head">
+        <div>
+          <h1 style="font-size:1.4rem;">Top promo strip</h1>
+          <p>Edit the rotating messages shown in the purple strip at the very top (used whenever no banner photo/video is set).</p>
+        </div>
+      </div>
+      <div class="field">
+        <label>One message per line</label>
+        <textarea id="promo-text" rows="4" placeholder="🎉 New arrivals every Friday"></textarea>
+        <div class="hint">Emoji are optional but recommended — keep each line short so it fits on mobile.</div>
+      </div>
+      <div class="modal-actions" style="justify-content:flex-start;">
+        <button type="button" class="btn-sm gold" id="promo-save">Save messages</button>
+        <button type="button" class="btn-sm" id="promo-reset">Reset to default</button>
       </div>
     </div>
 
@@ -522,6 +540,7 @@
   const STORAGE_KEY = "rbp_products_v4";
   const CART_KEY = "rbp_cart_v2";
   const BANNER_KEY = "rbp_banner_v1";
+  const PROMO_KEY = "rbp_promo_v1";
 
   const CATEGORY_TILE = { Food:"#FFE8D6", Toys:"#FFF3C4", Grooming:"#D8E9FF", Accessories:"#FBD7EC", Health:"#D6F5E8", Beds:"#E6DBFF", Clothing:"#FFE0EC" };
   const PET_EMOJI = { Dog:"🐶", Cat:"🐱" };
@@ -530,12 +549,13 @@
     {icon:"↩", text:"30-day money-back guarantee"},
     {icon:"🔒", text:"Secure checkout, every order"}
   ];
-  const PROMO_MESSAGES = [
+  const DEFAULT_PROMO_MESSAGES = [
     "🎉 New: the Dog Clothing collection just landed",
     "🚚 Free shipping on orders over R899",
     "💊 Medical Supplies — wellness essentials for dogs & cats",
     "🐾 Small-batch treats restocked weekly"
   ];
+  let promoMessages = DEFAULT_PROMO_MESSAGES.slice();
   const HERO_CONTENT = {
     All: { eyebrow:"🐾 Est. for good boys & girls", heading:'Everything your <em>best friend</em><br/>actually deserves.', body:"Thoughtfully sourced food, toys, and gear — stocked in small batches, picked over by two very opinionated shop dogs." },
     Dog: { eyebrow:"🐕 Dog favorites", heading:'Everything your <em>dog</em><br/>actually deserves.', body:"Food, toys, clothing, and gear picked by two very opinionated shop dogs who test everything first." },
@@ -688,7 +708,7 @@
     promo.classList.add("hide");
     el.classList.remove("hide");
     if(siteBanner.type === "video"){
-      el.innerHTML = `<div class="site-banner-inner"><video src="${attrSafe(siteBanner.src)}" autoplay muted loop playsinline></video></div>`;
+      el.innerHTML = `<div class="site-banner-inner"><video src="${attrSafe(siteBanner.src)}" autoplay muted loop playsinline preload="auto"></video></div>`;
     } else {
       el.innerHTML = `<div class="site-banner-inner"><img src="${attrSafe(siteBanner.src)}" alt="Rainbow's Pets banner" /></div>`;
     }
@@ -702,7 +722,7 @@
       return;
     }
     if(current.type === "video"){
-      preview.innerHTML = `<video src="${attrSafe(current.src)}" autoplay muted loop playsinline></video>`;
+      preview.innerHTML = `<video src="${attrSafe(current.src)}" autoplay muted loop playsinline preload="auto"></video>`;
     } else {
       preview.innerHTML = `<img src="${attrSafe(current.src)}" alt="" />`;
     }
@@ -718,15 +738,28 @@
   }
 
   // ---------- promo bar ----------
+  let promoInterval = null;
+  function loadPromoMessages(){
+    try{
+      const raw = localStorage.getItem(PROMO_KEY);
+      const parsed = raw ? JSON.parse(raw) : null;
+      promoMessages = (Array.isArray(parsed) && parsed.length) ? parsed : DEFAULT_PROMO_MESSAGES.slice();
+    }catch(e){ promoMessages = DEFAULT_PROMO_MESSAGES.slice(); }
+  }
+  function savePromoMessages(list){
+    promoMessages = list.length ? list : DEFAULT_PROMO_MESSAGES.slice();
+    localStorage.setItem(PROMO_KEY, JSON.stringify(promoMessages));
+  }
   function initPromoBar(){
     const track = document.getElementById("promo-track");
-    track.innerHTML = PROMO_MESSAGES.map((m,i)=> `<div class="promo-msg${i===0?' active':''}">${m}</div>`).join("");
+    if(promoInterval){ clearInterval(promoInterval); promoInterval = null; }
+    track.innerHTML = promoMessages.map((m,i)=> `<div class="promo-msg${i===0?' active':''}">${escapeHtml(m)}</div>`).join("");
     const msgs = track.querySelectorAll(".promo-msg");
     if(msgs.length <= 1) return;
     const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if(reduceMotion) return;
     let i = 0;
-    setInterval(()=>{
+    promoInterval = setInterval(()=>{
       msgs[i].classList.remove("active");
       i = (i+1) % msgs.length;
       msgs[i].classList.add("active");
@@ -755,6 +788,9 @@
 
   function renderPetTiles(){
     const wrap = document.getElementById("pet-tiles");
+    const isHome = activePet === "All" && activeCategory === "All" && !searchQuery;
+    if(!isHome){ wrap.innerHTML = ""; wrap.classList.add("hide"); return; }
+    wrap.classList.remove("hide");
     const pets = Array.from(new Set(products.map(p=>p.pet)));
     wrap.innerHTML = "";
     pets.forEach(pt=>{
@@ -1251,8 +1287,8 @@
     document.getElementById("nav-admin").classList.toggle("active", view==="admin");
     document.getElementById("nav-shop").classList.toggle("active", view!=="admin");
   }
-  function goToShop(){ showView("shop"); renderPetTabs(); renderHero(); renderShopBreadcrumb(); renderFilters(); renderGrid(); window.scrollTo({top:0, behavior:"instant"}); }
-  function showAdmin(){ showView("admin"); renderAdmin(); bannerDraft = siteBanner ? {...siteBanner} : null; document.getElementById("banner-url").value = (siteBanner && !siteBanner.src.startsWith("data:")) ? siteBanner.src : ""; document.getElementById("banner-url-type").value = siteBanner ? siteBanner.type : "video"; renderBannerAdmin(); }
+  function goToShop(){ showView("shop"); renderPetTabs(); renderPetTiles(); renderHero(); renderShopBreadcrumb(); renderFilters(); renderGrid(); window.scrollTo({top:0, behavior:"instant"}); }
+  function showAdmin(){ showView("admin"); renderAdmin(); bannerDraft = siteBanner ? {...siteBanner} : null; document.getElementById("banner-url").value = (siteBanner && !siteBanner.src.startsWith("data:")) ? siteBanner.src : ""; document.getElementById("banner-url-type").value = siteBanner ? siteBanner.type : "video"; renderBannerAdmin(); document.getElementById("promo-text").value = promoMessages.join("\n"); }
 
   function renderAll(){ renderPetTabs(); renderPetTiles(); renderHero(); renderShopBreadcrumb(); renderFilters(); renderGrid(); renderCart(); renderAdmin(); }
 
@@ -1343,6 +1379,19 @@
     toast("Banner removed");
   });
 
+  document.getElementById("promo-save").addEventListener("click", ()=>{
+    const lines = document.getElementById("promo-text").value.split("\n").map(s=>s.trim()).filter(Boolean);
+    savePromoMessages(lines);
+    initPromoBar();
+    toast("Promo messages updated");
+  });
+  document.getElementById("promo-reset").addEventListener("click", ()=>{
+    savePromoMessages(DEFAULT_PROMO_MESSAGES.slice());
+    document.getElementById("promo-text").value = promoMessages.join("\n");
+    initPromoBar();
+    toast("Promo messages reset to default");
+  });
+
   document.getElementById("btn-import-trigger").addEventListener("click", ()=> document.getElementById("csv-input").click());
   document.getElementById("csv-input").addEventListener("change", (e)=>{ const file = e.target.files[0]; if(file) importCSV(file); e.target.value = ""; });
 
@@ -1352,7 +1401,7 @@
     searchDebounce = setTimeout(()=>{
       searchQuery = e.target.value.trim();
       if(currentView !== "shop") showView("shop");
-      renderShopBreadcrumb(); renderFilters(); renderGrid();
+      renderPetTiles(); renderShopBreadcrumb(); renderFilters(); renderGrid();
     }, 150);
   });
 
@@ -1360,6 +1409,7 @@
   loadProducts();
   loadCart();
   loadBanner();
+  loadPromoMessages();
   Object.keys(cart).forEach(id=>{ if(!byId(id)) delete cart[id]; });
   renderAll();
   renderSiteBanner();
