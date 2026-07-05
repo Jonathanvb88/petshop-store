@@ -338,6 +338,13 @@
   .footer-links button, #footer-contact{ background:none; border:none; color:var(--cream-dim); font-weight:600; font-size:0.84rem; padding:0; }
   .footer-links button:hover, #footer-contact:hover{ color:var(--mustard-dim); text-decoration:underline; }
   .footer-copy{ color:var(--sage); }
+  .footer-owner{ margin-top:16px; padding-top:16px; border-top:1px solid #00000010; }
+  .footer-owner button{ background:none; border:none; color:var(--sage); font-size:0.74rem; padding:0; opacity:0.7; }
+  .footer-owner button:hover{ opacity:1; text-decoration:underline; }
+
+  .admin-mode-bar{ background:#2A2438; color:#FAF9FF; display:flex; justify-content:space-between; align-items:center; padding:10px 24px; font-size:0.84rem; flex-wrap:wrap; gap:10px; position:sticky; top:0; z-index:45; }
+  .admin-mode-bar button{ background:var(--mustard); color:#1c2018; border:none; padding:6px 14px; border-radius:999px; font-weight:700; font-size:0.8rem; white-space:nowrap; }
+  .admin-mode-bar button:hover{ background:var(--mustard-dim); }
 
   .wishlist-btn{ background:transparent; color:var(--rust-dim); border:1.5px solid var(--card-line); }
   .wishlist-btn .cart-count{ background:var(--rust-dim); color:#fff; }
@@ -412,7 +419,6 @@
     </div>
     <nav class="links">
       <button id="nav-shop" class="active">Shop</button>
-      <button id="nav-admin">Admin</button>
     </nav>
     <button class="cart-btn wishlist-btn" id="open-wishlist">♡ <span class="cart-count" id="wishlist-count">0</span></button>
     <button class="cart-btn" id="open-cart">Cart <span class="cart-count" id="cart-count">0</span></button>
@@ -453,6 +459,10 @@
 
 <!-- ============ ADMIN VIEW ============ -->
 <main id="admin-view" class="hide">
+  <div class="admin-mode-bar">
+    <span>🔧 Admin mode — you're viewing the store owner dashboard</span>
+    <button id="exit-admin-btn">Exit to shop →</button>
+  </div>
   <div class="admin-wrap wrap">
 
     <div class="tabs admin-subnav">
@@ -643,6 +653,7 @@
     <button id="footer-contact">Contact Us</button>
   </div>
   <div class="footer-copy">Rainbow's Pets — a demo storefront. Data lives in this browser only.</div>
+  <div class="footer-owner"><button id="nav-admin">Store owner login</button></div>
 </footer>
 
 <!-- ============ CONTACT MODAL ============ -->
@@ -2121,6 +2132,7 @@
   // ---------- wire up ----------
   document.getElementById("nav-shop").addEventListener("click", ()=> goToShop());
   document.getElementById("nav-admin").addEventListener("click", ()=> showAdmin());
+  document.getElementById("exit-admin-btn").addEventListener("click", ()=> goToShop());
   document.getElementById("open-cart").addEventListener("click", openCart);
   document.getElementById("close-cart").addEventListener("click", closeCart);
   document.getElementById("cart-scrim").addEventListener("click", closeCart);
