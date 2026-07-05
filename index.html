@@ -174,8 +174,9 @@
   .trust-badges .item{ display:flex; align-items:center; gap:10px; font-size:0.84rem; color:var(--cream-dim); }
   .pdp-desc{ color:var(--sage); font-size:0.95rem; line-height:1.6; margin-bottom:0; }
 
-  .tabs{ display:flex; gap:4px; border-bottom:1px solid #00000014; margin:48px 0 0; }
-  .tab-btn{ background:none; border:none; color:var(--sage); font-weight:600; font-size:0.92rem; padding:12px 18px; border-bottom:2px solid transparent; }
+  .tabs{ display:flex; gap:4px; border-bottom:1px solid #00000014; margin:48px 0 0; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .tabs::-webkit-scrollbar{ display:none; }
+  .tab-btn{ background:none; border:none; color:var(--sage); font-weight:600; font-size:0.92rem; padding:12px 18px; border-bottom:2px solid transparent; white-space:nowrap; flex-shrink:0; }
   .tab-btn.active{ color:var(--cream); border-bottom-color:var(--mustard); }
   .tab-panel{ padding:26px 2px; }
   .spec-list{ list-style:none; padding:0; margin:0; display:grid; grid-template-columns:1fr 1fr; gap:10px 30px; }
@@ -241,6 +242,18 @@
   .toolbar{ display:flex; gap:10px; flex-wrap:wrap; }
 
   .banner-panel{ background:var(--card); border:1px solid var(--card-line); border-radius:14px; padding:24px; margin-bottom:34px; }
+  .admin-subnav{ margin:0 0 28px; }
+  .photos-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(210px,1fr)); gap:16px; padding-bottom:20px; }
+  .photo-card{ background:var(--card); border:1px solid var(--card-line); border-radius:12px; padding:14px; }
+  .photo-thumb{ height:100px; border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:2rem; margin-bottom:10px; }
+  .photo-meta h4{ margin:0 0 2px; font-size:0.88rem; font-weight:600; }
+  .photo-meta .mono{ color:var(--sage); font-size:0.72rem; }
+  .photo-actions{ margin-top:12px; display:flex; flex-direction:column; gap:7px; }
+  .photo-actions .row{ display:flex; gap:6px; }
+  .photo-actions input[type=text]{ flex:1; min-width:0; background:#0000000c; border:1px solid #00000026; border-radius:7px; padding:7px 9px; font-size:0.78rem; color:var(--cream); font-family:inherit; }
+  .photo-btn{ padding:7px 10px; border-radius:7px; font-size:0.76rem; font-weight:600; border:1px solid #00000026; background:transparent; color:var(--cream); white-space:nowrap; }
+  .photo-btn:hover{ border-color:#00000055; }
+  .photo-btn.clear{ color:var(--rust-dim); }
   .banner-editor{ display:grid; grid-template-columns: 260px 1fr; gap:22px; margin-top:6px; }
   .banner-preview{ height:150px; border-radius:12px; background:var(--bg-soft); border:1px solid var(--card-line); display:flex; align-items:center; justify-content:center; overflow:hidden; }
   .banner-preview video, .banner-preview img{ width:100%; height:100%; object-fit:cover; }
@@ -369,89 +382,113 @@
 <main id="admin-view" class="hide">
   <div class="admin-wrap wrap">
 
-    <div class="banner-panel">
+    <div class="tabs admin-subnav">
+      <button class="tab-btn active" id="asub-photos" data-asub="photos">Product photos</button>
+      <button class="tab-btn" id="asub-banner" data-asub="banner">Homepage banner</button>
+      <button class="tab-btn" id="asub-inventory" data-asub="inventory">Inventory</button>
+    </div>
+
+    <!-- ---- PRODUCT PHOTOS ---- -->
+    <div id="admin-panel-photos">
       <div class="admin-head">
         <div>
-          <h1 style="font-size:1.4rem;">Homepage banner</h1>
-          <p>Upload a short phone video or a poster image to show at the top of the site, in place of the default promo strip.</p>
+          <h1 style="font-size:1.4rem;">Product photos</h1>
+          <p>Upload a real photo for any product, or paste an image link. Changes show up everywhere that product appears.</p>
         </div>
       </div>
-      <div class="banner-editor">
-        <div class="banner-preview" id="banner-preview">
-          <span class="banner-preview-empty">No banner set — the animated promo strip is showing instead</span>
+      <div class="photos-grid" id="photos-grid"></div>
+    </div>
+
+    <!-- ---- HOMEPAGE BANNER ---- -->
+    <div id="admin-panel-banner" class="hide">
+      <div class="banner-panel">
+        <div class="admin-head">
+          <div>
+            <h1 style="font-size:1.4rem;">Homepage banner</h1>
+            <p>Upload a short phone video or a poster image to show at the top of the site, in place of the default promo strip.</p>
+          </div>
         </div>
-        <div class="banner-controls">
-          <div class="field">
-            <label>Upload video or photo</label>
-            <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <button type="button" class="btn-sm" id="banner-upload-trigger">Upload from this device</button>
-              <input type="file" id="banner-file" accept="video/*,image/*" />
+        <div class="banner-editor">
+          <div class="banner-preview" id="banner-preview">
+            <span class="banner-preview-empty">No banner set — the animated promo strip is showing instead</span>
+          </div>
+          <div class="banner-controls">
+            <div class="field">
+              <label>Upload video or photo</label>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="btn-sm" id="banner-upload-trigger">Upload from this device</button>
+                <input type="file" id="banner-file" accept="video/*,image/*" />
+              </div>
+              <div class="hint">MP4/WebM video or JPG/PNG image, under 8MB. Stored right in this browser.</div>
             </div>
-            <div class="hint">MP4/WebM video or JPG/PNG image, under 8MB. Stored right in this browser.</div>
-          </div>
-          <div class="field">
-            <label>...or paste a hosted link</label>
-            <div class="field-row banner-url-row">
-              <select id="banner-url-type">
-                <option value="video">Video URL</option>
-                <option value="image">Image URL</option>
-              </select>
-              <input id="banner-url" type="text" placeholder="https://..." />
+            <div class="field">
+              <label>...or paste a hosted link</label>
+              <div class="field-row banner-url-row">
+                <select id="banner-url-type">
+                  <option value="video">Video URL</option>
+                  <option value="image">Image URL</option>
+                </select>
+                <input id="banner-url" type="text" placeholder="https://..." />
+              </div>
+            </div>
+            <div class="modal-actions" style="justify-content:flex-start;">
+              <button type="button" class="btn-sm gold" id="banner-save">Save banner</button>
+              <button type="button" class="btn-sm" id="banner-remove">Remove banner</button>
             </div>
           </div>
-          <div class="modal-actions" style="justify-content:flex-start;">
-            <button type="button" class="btn-sm gold" id="banner-save">Save banner</button>
-            <button type="button" class="btn-sm" id="banner-remove">Remove banner</button>
+        </div>
+      </div>
+
+      <div class="banner-panel">
+        <div class="admin-head">
+          <div>
+            <h1 style="font-size:1.4rem;">Top promo strip</h1>
+            <p>Edit the rotating messages shown in the purple strip at the very top (used whenever no banner photo/video is set).</p>
           </div>
+        </div>
+        <div class="field">
+          <label>One message per line</label>
+          <textarea id="promo-text" rows="4" placeholder="🎉 New arrivals every Friday"></textarea>
+          <div class="hint">Emoji are optional but recommended — keep each line short so it fits on mobile.</div>
+        </div>
+        <div class="modal-actions" style="justify-content:flex-start;">
+          <button type="button" class="btn-sm gold" id="promo-save">Save messages</button>
+          <button type="button" class="btn-sm" id="promo-reset">Reset to default</button>
         </div>
       </div>
     </div>
 
-    <div class="banner-panel">
+    <!-- ---- INVENTORY ---- -->
+    <div id="admin-panel-inventory" class="hide">
       <div class="admin-head">
         <div>
-          <h1 style="font-size:1.4rem;">Top promo strip</h1>
-          <p>Edit the rotating messages shown in the purple strip at the very top (used whenever no banner photo/video is set).</p>
+          <h1>Inventory</h1>
+          <p>Add products one at a time, or import a batch by CSV. New to CSV uploads? Download the template first — it shows the exact columns expected.</p>
+        </div>
+        <div class="toolbar">
+          <button class="btn-sm" id="btn-template">⤓ Download template</button>
+          <button class="btn-sm" id="btn-export">↓ Export CSV</button>
+          <button class="btn-sm" id="btn-import-trigger">↑ Import CSV</button>
+          <input type="file" id="csv-input" accept=".csv" />
+          <button class="btn-sm gold" id="btn-add-product">+ Add product</button>
         </div>
       </div>
-      <div class="field">
-        <label>One message per line</label>
-        <textarea id="promo-text" rows="4" placeholder="🎉 New arrivals every Friday"></textarea>
-        <div class="hint">Emoji are optional but recommended — keep each line short so it fits on mobile.</div>
+
+      <div class="stat-cards">
+        <div class="stat-card"><span class="n" id="a-total">0</span><span class="l">Total products</span></div>
+        <div class="stat-card"><span class="n" id="a-value">R0</span><span class="l">Inventory value</span></div>
+        <div class="stat-card"><span class="n" id="a-units">0</span><span class="l">Units in stock</span></div>
+        <div class="stat-card warn"><span class="n" id="a-low">0</span><span class="l">Low stock (&lt;5)</span></div>
       </div>
-      <div class="modal-actions" style="justify-content:flex-start;">
-        <button type="button" class="btn-sm gold" id="promo-save">Save messages</button>
-        <button type="button" class="btn-sm" id="promo-reset">Reset to default</button>
+
+      <div class="table-scroll">
+        <table class="admin-table">
+          <thead><tr><th>Product</th><th>Pet</th><th>Category</th><th>SKU</th><th>Price</th><th>Stock</th><th></th></tr></thead>
+          <tbody id="admin-tbody"></tbody>
+        </table>
       </div>
     </div>
 
-    <div class="admin-head">
-      <div>
-        <h1>Inventory</h1>
-        <p>Add products one at a time, or import a batch by CSV. New to CSV uploads? Download the template first — it shows the exact columns expected.</p>
-      </div>
-      <div class="toolbar">
-        <button class="btn-sm" id="btn-template">⤓ Download template</button>
-        <button class="btn-sm" id="btn-export">↓ Export CSV</button>
-        <button class="btn-sm" id="btn-import-trigger">↑ Import CSV</button>
-        <input type="file" id="csv-input" accept=".csv" />
-        <button class="btn-sm gold" id="btn-add-product">+ Add product</button>
-      </div>
-    </div>
-
-    <div class="stat-cards">
-      <div class="stat-card"><span class="n" id="a-total">0</span><span class="l">Total products</span></div>
-      <div class="stat-card"><span class="n" id="a-value">R0</span><span class="l">Inventory value</span></div>
-      <div class="stat-card"><span class="n" id="a-units">0</span><span class="l">Units in stock</span></div>
-      <div class="stat-card warn"><span class="n" id="a-low">0</span><span class="l">Low stock (&lt;5)</span></div>
-    </div>
-
-    <div class="table-scroll">
-      <table class="admin-table">
-        <thead><tr><th>Product</th><th>Pet</th><th>Category</th><th>SKU</th><th>Price</th><th>Stock</th><th></th></tr></thead>
-        <tbody id="admin-tbody"></tbody>
-      </table>
-    </div>
   </div>
 </main>
 
@@ -1329,7 +1366,89 @@
     document.getElementById("nav-shop").classList.toggle("active", view!=="admin");
   }
   function goToShop(){ showView("shop"); renderPetTabs(); renderPetTiles(); renderHero(); renderShopBreadcrumb(); renderFilters(); renderGrid(); window.scrollTo({top:0, behavior:"instant"}); }
-  function showAdmin(){ showView("admin"); renderAdmin(); bannerDraft = siteBanner ? {...siteBanner} : null; document.getElementById("banner-url").value = (siteBanner && !siteBanner.src.startsWith("data:")) ? siteBanner.src : ""; document.getElementById("banner-url-type").value = siteBanner ? siteBanner.type : "video"; renderBannerAdmin(); document.getElementById("promo-text").value = promoMessages.join("\n"); }
+  function showAdmin(){
+    showView("admin");
+    renderAdmin();
+    bannerDraft = siteBanner ? {...siteBanner} : null;
+    document.getElementById("banner-url").value = (siteBanner && !siteBanner.src.startsWith("data:")) ? siteBanner.src : "";
+    document.getElementById("banner-url-type").value = siteBanner ? siteBanner.type : "video";
+    renderBannerAdmin();
+    document.getElementById("promo-text").value = promoMessages.join("\n");
+    showAdminSub("photos");
+  }
+
+  function showAdminSub(sub){
+    ["photos","banner","inventory"].forEach(s=>{
+      document.getElementById("admin-panel-"+s).classList.toggle("hide", s!==sub);
+      document.getElementById("asub-"+s).classList.toggle("active", s===sub);
+    });
+    if(sub === "photos") renderPhotosGrid();
+  }
+
+  function renderPhotosGrid(){
+    const wrap = document.getElementById("photos-grid");
+    wrap.innerHTML = products.map(p => `
+      <div class="photo-card" data-pid="${p.id}">
+        <div class="photo-thumb" style="background:${tileColor(p.category)}">${mediaInner(p)}</div>
+        <div class="photo-meta">
+          <h4>${escapeHtml(p.name)}</h4>
+          <span class="mono">${escapeHtml(p.sku)}</span>
+        </div>
+        <div class="photo-actions">
+          <div class="row">
+            <button type="button" class="photo-btn" data-photo-upload="${p.id}">Upload</button>
+            <button type="button" class="photo-btn clear" data-photo-clear="${p.id}">Clear</button>
+          </div>
+          <input type="file" accept="image/*" class="hide photo-file-input" data-photo-file="${p.id}" />
+          <div class="row">
+            <input type="text" placeholder="or paste image URL" class="photo-url-input" data-photo-url="${p.id}" value="${p.image && !p.image.startsWith('data:') ? attrSafe(p.image) : ''}" />
+            <button type="button" class="photo-btn" data-photo-save="${p.id}">Save</button>
+          </div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function setProductImage(pid, imageValue){
+    const p = byId(pid);
+    if(!p) return;
+    p.image = imageValue || null;
+    saveProducts();
+    renderPhotosGrid();
+    renderGrid();
+    renderAdmin();
+    toast(imageValue ? "Photo updated" : "Photo cleared");
+  }
+
+  document.getElementById("photos-grid").addEventListener("click", (e)=>{
+    const uploadBtn = e.target.closest("[data-photo-upload]");
+    if(uploadBtn){
+      document.querySelector(`[data-photo-file="${uploadBtn.dataset.photoUpload}"]`).click();
+      return;
+    }
+    const clearBtn = e.target.closest("[data-photo-clear]");
+    if(clearBtn){ setProductImage(clearBtn.dataset.photoClear, null); return; }
+    const saveBtn = e.target.closest("[data-photo-save]");
+    if(saveBtn){
+      const input = document.querySelector(`[data-photo-url="${saveBtn.dataset.photoSave}"]`);
+      setProductImage(saveBtn.dataset.photoSave, input.value.trim());
+    }
+  });
+  document.getElementById("photos-grid").addEventListener("change", (e)=>{
+    if(e.target.matches("[data-photo-file]")){
+      const file = e.target.files[0];
+      if(!file) return;
+      if(file.size > 2*1024*1024){ toast("Please use an image under 2MB"); e.target.value=""; return; }
+      const pid = e.target.dataset.photoFile;
+      const reader = new FileReader();
+      reader.onload = (ev)=> setProductImage(pid, ev.target.result);
+      reader.readAsDataURL(file);
+      e.target.value = "";
+    }
+  });
+  document.querySelectorAll("[data-asub]").forEach(b=> b.addEventListener("click", ()=> showAdminSub(b.dataset.asub)));
+
+
 
   function renderAll(){ renderPetTabs(); renderPetTiles(); renderHero(); renderShopBreadcrumb(); renderFilters(); renderGrid(); renderCart(); renderAdmin(); }
 
