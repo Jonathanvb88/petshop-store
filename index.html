@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Furrow &amp; Co. — Goods for good dogs (and cats)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0F241B;
+    --bg-soft: #142E22;
+    --surface: #17332639;
+    --card: #163227;
+    --card-line: #294a3a;
+    --cream: #F4EFE1;
+    --cream-dim: #C9C2AC;
+    --sage: #93AB9C;
+    --mustard: #E8B84B;
+    --mustard-dim: #f0cb75;
+    --rust: #C15B3C;
+    --rust-dim: #d97e63;
+    --danger: #d97e63;
+    --radius: 14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: radial-gradient(1200px 600px at 10% -10%, #163629 0%, var(--bg) 55%) fixed;
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{ font-family:'Fraunces', serif; letter-spacing:-0.01em; }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+  a{color:inherit;}
+  button{font-family:inherit; cursor:pointer;}
+  ::selection{ background: var(--mustard); color:#1c2018; }
+  :focus-visible{ outline: 2px solid var(--mustard); outline-offset: 2px; }
+
+  /* ---------- layout shells ---------- */
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 24px; }
+  .hide{ display:none !important; }
+
+  /* ---------- nav ---------- */
+  header.top{
+    position:sticky; top:0; z-index:40;
+    background: rgba(15,36,27,0.86); backdrop-filter: blur(10px);
+    border-bottom: 1px solid #ffffff14;
+  }
+  .navbar{ display:flex; align-items:center; justify-content:space-between; padding:16px 24px; gap:20px; }
+  .brand{ display:flex; align-items:center; gap:10px; font-family:'Fraunces',serif; font-weight:600; font-size:1.28rem; }
+  .brand .stamp{
+    width:34px; height:34px; border-radius:50%; background: var(--mustard); color:#1c2018;
+    display:flex; align-items:center; justify-content:center; font-size:1.1rem; transform: rotate(-8deg);
+    box-shadow: 0 2px 0 #00000030;
+  }
+  nav.links{ display:flex; align-items:center; gap:6px; }
+  nav.links button{
+    background:transparent; border:none; color: var(--sage); font-weight:600; font-size:0.92rem;
+    padding:9px 14px; border-radius:999px; transition: all .15s ease;
+  }
+  nav.links button:hover{ color:var(--cream); background:#ffffff10; }
+  nav.links button.active{ color:#1c2018; background: var(--cream); }
+  .cart-btn{
+    position:relative; background: var(--mustard); color:#1c2018; border:none;
+    padding:10px 16px; border-radius:999px; font-weight:700; font-size:0.9rem;
+    display:flex; align-items:center; gap:8px;
+  }
+  .cart-btn:hover{ background: var(--mustard-dim); }
+  .cart-count{
+    background:#1c2018; color:var(--mustard); font-size:0.72rem; font-weight:700;
+    min-width:20px; height:20px; border-radius:999px; display:flex; align-items:center; justify-content:center;
+    font-family:'JetBrains Mono',monospace;
+  }
+
+  /* ---------- hero ---------- */
+  .hero{ padding:64px 24px 40px; }
+  .hero-inner{ display:flex; justify-content:space-between; align-items:flex-end; gap:40px; flex-wrap:wrap; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px; color: var(--mustard); font-family:'JetBrains Mono',monospace;
+    font-size:0.78rem; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:18px;
+    border:1px solid #ffffff22; padding:6px 12px; border-radius:999px;
+  }
+  .hero h1{ font-size: clamp(2.2rem, 4.2vw, 3.6rem); line-height:1.05; margin:0 0 16px; max-width:640px; font-weight:600; }
+  .hero h1 em{ font-style:italic; color: var(--mustard); font-weight:500; }
+  .hero p{ color: var(--sage); max-width:480px; font-size:1.05rem; line-height:1.55; margin:0; }
+  .hero-stats{ display:flex; gap:28px; }
+  .hstat{ text-align:right; }
+  .hstat .n{ font-family:'Fraunces',serif; font-size:2rem; font-weight:600; color:var(--cream); display:block; }
+  .hstat .l{ color:var(--sage); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.06em; }
+
+  /* ---------- filter pills ---------- */
+  .filters{ display:flex; gap:8px; flex-wrap:wrap; padding: 8px 24px 28px; }
+  .pill{
+    border:1px solid #ffffff22; background:transparent; color:var(--cream-dim);
+    padding:9px 16px; border-radius:999px; font-size:0.86rem; font-weight:500; transition: all .15s ease;
+  }
+  .pill:hover{ border-color:#ffffff55; color:var(--cream); }
+  .pill.active{ background:var(--cream); color:#1c2018; border-color:var(--cream); font-weight:700; }
+
+  /* ---------- product grid ---------- */
+  .grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:22px; padding:0 24px 80px; }
+  .tag-card{
+    position:relative; background: var(--card); border:1px solid var(--card-line); border-radius:12px;
+    padding:20px 18px 18px; transition: transform .18s ease, border-color .18s ease;
+  }
+  .tag-card:hover{ transform: translateY(-4px); border-color:#ffffff40; }
+  .tag-card:hover .tile{ transform: rotate(-2deg) scale(1.03); }
+  .punch{
+    position:absolute; top:-9px; left:24px; width:18px; height:18px; border-radius:50%;
+    background: var(--bg); border:1px solid var(--card-line);
+  }
+  .tile{
+    height:118px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+    font-size:2.6rem; margin-bottom:14px; transition: transform .18s ease;
+  }
+  .tag-card .cat{ font-family:'JetBrains Mono',monospace; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--sage); }
+  .tag-card h3{ font-size:1.05rem; margin:6px 0 4px; font-weight:600; line-height:1.3; }
+  .tag-card .desc{ color:var(--cream-dim); font-size:0.83rem; line-height:1.4; margin:0 0 14px; min-height:36px; }
+  .tag-card .row{ display:flex; align-items:center; justify-content:space-between; }
+  .price{ font-family:'JetBrains Mono',monospace; font-weight:700; font-size:1.05rem; color:var(--mustard); }
+  .stock-low{ color: var(--rust-dim); font-size:0.72rem; font-family:'JetBrains Mono',monospace; }
+  .add-btn{
+    background:transparent; border:1.5px solid var(--mustard); color:var(--mustard);
+    padding:7px 14px; border-radius:8px; font-weight:700; font-size:0.82rem; transition: all .15s ease;
+  }
+  .add-btn:hover{ background:var(--mustard); color:#1c2018; }
+  .add-btn:disabled{ opacity:0.35; border-color:var(--cream-dim); color:var(--cream-dim); cursor:not-allowed; }
+  .empty-note{ color:var(--sage); padding:40px 24px; text-align:center; }
+
+  /* ---------- cart drawer ---------- */
+  .scrim{ position:fixed; inset:0; background:#05100b99; z-index:60; opacity:0; pointer-events:none; transition:opacity .2s ease; }
+  .scrim.open{ opacity:1; pointer-events:auto; }
+  .drawer{
+    position:fixed; top:0; right:0; height:100%; width:min(420px,92vw); background:var(--bg-soft);
+    border-left:1px solid #ffffff1c; z-index:61; transform:translateX(100%); transition: transform .25s ease;
+    display:flex; flex-direction:column;
+  }
+  .drawer.open{ transform:translateX(0); }
+  .drawer-head{ padding:22px 22px 16px; border-bottom:1px solid #ffffff14; display:flex; justify-content:space-between; align-items:center; }
+  .drawer-head h2{ margin:0; font-size:1.3rem; }
+  .icon-btn{ background:transparent; border:none; color:var(--sage); font-size:1.3rem; padding:4px; }
+  .icon-btn:hover{ color:var(--cream); }
+  .cart-items{ flex:1; overflow-y:auto; padding:14px 22px; }
+  .cart-line{ display:flex; gap:12px; padding:14px 0; border-bottom:1px solid #ffffff10; }
+  .cart-line .tile-sm{ width:52px; height:52px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; flex-shrink:0; }
+  .cart-line .info{ flex:1; min-width:0; }
+  .cart-line .info h4{ margin:0 0 4px; font-size:0.92rem; font-weight:600; }
+  .qty-row{ display:flex; align-items:center; gap:8px; margin-top:6px; }
+  .qty-row button{ width:22px; height:22px; border-radius:6px; border:1px solid #ffffff30; background:transparent; color:var(--cream); }
+  .qty-row span{ font-family:'JetBrains Mono',monospace; font-size:0.85rem; min-width:16px; text-align:center; }
+  .remove-link{ background:none; border:none; color:var(--rust-dim); font-size:0.76rem; text-decoration:underline; padding:0; margin-left:auto; }
+  .drawer-foot{ padding:20px 22px 26px; border-top:1px solid #ffffff14; }
+  .subtotal-row{ display:flex; justify-content:space-between; margin-bottom:16px; font-size:1.05rem; }
+  .checkout-btn{ width:100%; background:var(--mustard); color:#1c2018; border:none; padding:14px; border-radius:10px; font-weight:700; font-size:1rem; }
+  .checkout-btn:hover{ background:var(--mustard-dim); }
+  .checkout-btn:disabled{ opacity:0.4; }
+
+  /* ---------- modals ---------- */
+  .modal-scrim{ position:fixed; inset:0; background:#05100b99; z-index:70; display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition:opacity .2s ease; }
+  .modal-scrim.open{ opacity:1; pointer-events:auto; }
+  .modal{ background:var(--bg-soft); border:1px solid #ffffff1c; border-radius:16px; width:100%; max-width:460px; padding:30px; max-height:88vh; overflow-y:auto; }
+  .modal.wide{ max-width:720px; }
+  .modal h2{ margin:0 0 6px; font-size:1.5rem; }
+  .modal .sub{ color:var(--sage); font-size:0.9rem; margin-bottom:22px; }
+  .check-circle{ width:56px; height:56px; border-radius:50%; background:var(--mustard); color:#1c2018; display:flex; align-items:center; justify-content:center; font-size:1.8rem; margin-bottom:18px; }
+  .order-id{ font-family:'JetBrains Mono',monospace; background:#ffffff0f; padding:12px 14px; border-radius:8px; font-size:0.95rem; margin:16px 0; }
+  .btn-primary{ background:var(--mustard); color:#1c2018; border:none; padding:12px 20px; border-radius:9px; font-weight:700; }
+  .btn-primary:hover{ background:var(--mustard-dim); }
+  .btn-ghost{ background:transparent; border:1px solid #ffffff2c; color:var(--cream); padding:12px 20px; border-radius:9px; font-weight:600; }
+  .btn-ghost:hover{ border-color:#ffffff55; }
+
+  /* ---------- admin ---------- */
+  .admin-wrap{ padding:38px 24px 90px; }
+  .admin-head{ display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px; margin-bottom:26px; }
+  .admin-head h1{ font-size:2rem; margin:0 0 6px; }
+  .admin-head p{ color:var(--sage); margin:0; font-size:0.94rem; }
+  .toolbar{ display:flex; gap:10px; flex-wrap:wrap; }
+  .stat-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:30px; }
+  .stat-card{ background:var(--card); border:1px solid var(--card-line); border-radius:12px; padding:18px 20px; }
+  .stat-card .n{ font-family:'Fraunces',serif; font-size:1.7rem; font-weight:600; display:block; }
+  .stat-card .l{ color:var(--sage); font-size:0.78rem; text-transform:uppercase; letter-spacing:0.05em; }
+  .stat-card.warn .n{ color:var(--rust-dim); }
+
+  table.admin-table{ width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--card-line); border-radius:12px; overflow:hidden; }
+  table.admin-table thead th{ text-align:left; padding:13px 16px; font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--sage); border-bottom:1px solid var(--card-line); font-family:'JetBrains Mono',monospace; font-weight:500;}
+  table.admin-table tbody td{ padding:13px 16px; border-bottom:1px solid #ffffff0c; font-size:0.9rem; vertical-align:middle; }
+  table.admin-table tbody tr:last-child td{ border-bottom:none; }
+  table.admin-table tbody tr:hover{ background:#ffffff06; }
+  .row-icon{ display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:8px; font-size:1.2rem; margin-right:10px; vertical-align:middle; }
+  .badge{ font-family:'JetBrains Mono',monospace; font-size:0.7rem; padding:3px 9px; border-radius:999px; background:#ffffff10; color:var(--cream-dim); }
+  .badge.low{ background:#c15b3c30; color:var(--rust-dim); }
+  .link-btn{ background:none; border:none; color:var(--mustard); font-weight:600; font-size:0.83rem; padding:4px 8px; }
+  .link-btn:hover{ text-decoration:underline; }
+  .link-btn.danger{ color:var(--rust-dim); }
+  .table-scroll{ overflow-x:auto; border-radius:12px; }
+
+  .btn-sm{ padding:9px 15px; border-radius:8px; font-size:0.85rem; font-weight:600; border:1px solid #ffffff2c; background:transparent; color:var(--cream); }
+  .btn-sm:hover{ border-color:#ffffff55; }
+  .btn-sm.gold{ background:var(--mustard); color:#1c2018; border-color:var(--mustard); }
+  .btn-sm.gold:hover{ background:var(--mustard-dim); }
+  input[type=file]{ display:none; }
+
+  form .field{ margin-bottom:16px; }
+  form label{ display:block; font-size:0.8rem; color:var(--sage); margin-bottom:6px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; }
+  form input, form select, form textarea{
+    width:100%; background:#ffffff0c; border:1px solid #ffffff26; color:var(--cream); padding:11px 13px;
+    border-radius:8px; font-family:'Inter',sans-serif; font-size:0.92rem;
+  }
+  form textarea{ resize:vertical; min-height:70px; }
+  form input:focus, form select:focus, form textarea:focus{ border-color:var(--mustard); }
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .modal-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:22px; }
+
+  /* ---------- toast ---------- */
+  #toast-host{ position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:80; display:flex; flex-direction:column; gap:8px; align-items:center; }
+  .toast{ background:var(--cream); color:#1c2018; padding:12px 20px; border-radius:999px; font-weight:600; font-size:0.88rem; box-shadow:0 8px 24px #00000040; opacity:0; transform:translateY(10px); transition:all .25s ease; }
+  .toast.show{ opacity:1; transform:translateY(0); }
+
+  footer.site{ border-top:1px solid #ffffff14; padding:28px 24px; text-align:center; color:var(--sage); font-size:0.82rem; }
+
+  @media (max-width:640px){
+    .field-row{ grid-template-columns:1fr; }
+    .hero-inner{ align-items:flex-start; }
+    .hero-stats{ gap:18px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="navbar wrap">
+    <div class="brand"><span class="stamp">🐾</span> Furrow &amp; Co.</div>
+    <nav class="links">
+      <button id="nav-shop" class="active">Shop</button>
+      <button id="nav-admin">Admin</button>
+    </nav>
+    <button class="cart-btn" id="open-cart">
+      Cart <span class="cart-count" id="cart-count">0</span>
+    </button>
+  </div>
+</header>
+
+<!-- ============ SHOP VIEW ============ -->
+<main id="shop-view">
+  <section class="hero">
+    <div class="wrap hero-inner">
+      <div>
+        <div class="eyebrow">🐕 Est. for good boys &amp; girls</div>
+        <h1>Everything your <em>best friend</em><br/>actually deserves.</h1>
+        <p>Thoughtfully sourced food, toys, and gear — stocked in small batches, picked over by two very opinionated shop dogs.</p>
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><span class="n" id="stat-products">0</span><span class="l">Products</span></div>
+        <div class="hstat"><span class="n" id="stat-categories">0</span><span class="l">Categories</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="filters wrap" id="filter-bar"></div>
+
+  <div class="grid wrap" id="product-grid"></div>
+</main>
+
+<!-- ============ ADMIN VIEW ============ -->
+<main id="admin-view" class="hide">
+  <div class="admin-wrap wrap">
+    <div class="admin-head">
+      <div>
+        <h1>Inventory</h1>
+        <p>Add products one at a time, or import a batch by CSV.</p>
+      </div>
+      <div class="toolbar">
+        <button class="btn-sm" id="btn-export">↓ Export CSV</button>
+        <button class="btn-sm" id="btn-import-trigger">↑ Import CSV</button>
+        <input type="file" id="csv-input" accept=".csv" />
+        <button class="btn-sm gold" id="btn-add-product">+ Add product</button>
+      </div>
+    </div>
+
+    <div class="stat-cards">
+      <div class="stat-card"><span class="n" id="a-total">0</span><span class="l">Total products</span></div>
+      <div class="stat-card"><span class="n" id="a-value">$0</span><span class="l">Inventory value</span></div>
+      <div class="stat-card"><span class="n" id="a-units">0</span><span class="l">Units in stock</span></div>
+      <div class="stat-card warn"><span class="n" id="a-low">0</span><span class="l">Low stock (&lt;5)</span></div>
+    </div>
+
+    <div class="table-scroll">
+      <table class="admin-table">
+        <thead>
+          <tr><th>Product</th><th>Category</th><th>SKU</th><th>Price</th><th>Stock</th><th></th></tr>
+        </thead>
+        <tbody id="admin-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</main>
+
+<footer class="site wrap">Furrow &amp; Co. — a demo storefront. Data lives in this browser only.</footer>
+
+<!-- ============ CART DRAWER ============ -->
+<div class="scrim" id="cart-scrim"></div>
+<aside class="drawer" id="cart-drawer">
+  <div class="drawer-head">
+    <h2>Your cart</h2>
+    <button class="icon-btn" id="close-cart">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items"></div>
+  <div class="drawer-foot">
+    <div class="subtotal-row"><span>Subtotal</span><strong class="mono" id="cart-subtotal">$0.00</strong></div>
+    <button class="checkout-btn" id="checkout-btn">Checkout</button>
+  </div>
+</aside>
+
+<!-- ============ QUICK VIEW MODAL ============ -->
+<div class="modal-scrim" id="quickview-scrim">
+  <div class="modal" id="quickview-modal"></div>
+</div>
+
+<!-- ============ CHECKOUT CONFIRM MODAL ============ -->
+<div class="modal-scrim" id="confirm-scrim">
+  <div class="modal">
+    <div class="check-circle">✓</div>
+    <h2>Order placed</h2>
+    <p class="sub">Thanks! This is a demo checkout, so no payment was actually taken.</p>
+    <div class="order-id mono" id="order-id-display"></div>
+    <div class="modal-actions">
+      <button class="btn-primary" id="confirm-close">Keep shopping</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ ADD/EDIT PRODUCT MODAL ============ -->
+<div class="modal-scrim" id="product-form-scrim">
+  <div class="modal wide">
+    <h2 id="pf-title">Add product</h2>
+    <p class="sub">Fields marked required must be filled before saving.</p>
+    <form id="product-form">
+      <input type="hidden" id="pf-id" />
+      <div class="field-row">
+        <div class="field"><label>Name *</label><input id="pf-name" required /></div>
+        <div class="field"><label>SKU *</label><input id="pf-sku" required /></div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Category *</label>
+          <select id="pf-category" required>
+            <option value="Food">Food</option>
+            <option value="Toys">Toys</option>
+            <option value="Grooming">Grooming</option>
+            <option value="Accessories">Accessories</option>
+            <option value="Health">Health</option>
+            <option value="Beds">Beds</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Icon (emoji)</label>
+          <input id="pf-icon" placeholder="🦴" maxlength="4" />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Price (USD) *</label><input id="pf-price" type="number" step="0.01" min="0" required /></div>
+        <div class="field"><label>Stock *</label><input id="pf-stock" type="number" min="0" required /></div>
+      </div>
+      <div class="field"><label>Description</label><textarea id="pf-desc" placeholder="One short sentence about the product"></textarea></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="pf-cancel">Cancel</button>
+        <button type="submit" class="btn-primary" id="pf-save">Save product</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div id="toast-host"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  const STORAGE_KEY = "furrow_products_v1";
+  const CART_KEY = "furrow_cart_v1";
+
+  const CATEGORY_TILE = {
+    Food:        "#3c5a3f",
+    Toys:        "#5a4a2e",
+    Grooming:    "#3d4f5c",
+    Accessories: "#5c3d4a",
+    Health:      "#3d5c58",
+    Beds:        "#4a3d5c"
+  };
+
+  const SEED = [
+    {id:"p1",  sku:"FRW-FD-001", name:"Slow-Cooked Bone Broth", category:"Food", price:14.5, stock:32, icon:"🍲", desc:"Simmered 18 hours, no sodium, tail-wag guaranteed."},
+    {id:"p2",  sku:"FRW-FD-002", name:"Grain-Free Salmon Kibble", category:"Food", price:38, stock:20, icon:"🐟", desc:"Cold-water salmon, sweet potato, single protein."},
+    {id:"p3",  sku:"FRW-FD-003", name:"Freeze-Dried Liver Bites", category:"Food", price:9.75, stock:3, icon:"🥩", desc:"One ingredient. Extremely serious business to most dogs."},
+    {id:"p4",  sku:"FRW-TY-001", name:"Knotted Rope Tug", category:"Toys", price:12, stock:41, icon:"🪢", desc:"Cotton rope, dyed with plant pigment, machine washable."},
+    {id:"p5",  sku:"FRW-TY-002", name:"Squeaky Duck Classic", category:"Toys", price:8.5, stock:4, icon:"🦆", desc:"The original. Reinforced seams for power chewers."},
+    {id:"p6",  sku:"FRW-TY-003", name:"Feather Wand (Cat)", category:"Toys", price:10, stock:27, icon:"🪶", desc:"Real feathers, telescoping wand, hours of chaos."},
+    {id:"p7",  sku:"FRW-GR-001", name:"Oatmeal Shampoo Bar", category:"Grooming", price:11, stock:18, icon:"🧼", desc:"Sensitive-skin formula, zero plastic bottle."},
+    {id:"p8",  sku:"FRW-GR-002", name:"Slicker Brush", category:"Grooming", price:16, stock:2, icon:"🪮", desc:"Fine pins for undercoat season. Handle fits any grip."},
+    {id:"p9",  sku:"FRW-AC-001", name:"Waxed Canvas Leash", category:"Accessories", price:29, stock:15, icon:"🦮", desc:"Hand-waxed cotton canvas, brass hardware, 6ft."},
+    {id:"p10", sku:"FRW-AC-002", name:"Engraved Brass Tag", category:"Accessories", price:13, stock:60, icon:"🏷️", desc:"Free engraving, ships in 2 days."},
+    {id:"p11", sku:"FRW-HL-001", name:"Salmon Oil Supplement", category:"Health", price:19.5, stock:9, icon:"💊", desc:"Omega-3 for coat health, pump bottle, 16oz."},
+    {id:"p12", sku:"FRW-HL-002", name:"Joint Support Chews", category:"Health", price:24, stock:1, icon:"🦴", desc:"Glucosamine + turmeric, chicken flavored."},
+    {id:"p13", sku:"FRW-BD-001", name:"Linen Bolster Bed (M)", category:"Beds", price:64, stock:11, icon:"🛏️", desc:"Removable washable cover, memory foam base."},
+    {id:"p14", sku:"FRW-BD-002", name:"Cave Bed for Cats", category:"Beds", price:42, stock:7, icon:"🐈", desc:"Wool felt, hand-shaped, holds its dome shape for years."}
+  ];
+
+  let products = [];
+  let cart = {}; // id -> qty
+  let activeCategory = "All";
+  let editingId = null;
+
+  // ---------- persistence ----------
+  function loadProducts(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      products = raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(SEED));
+    }catch(e){ products = JSON.parse(JSON.stringify(SEED)); }
+    if(!Array.isArray(products) || products.length === 0){ products = JSON.parse(JSON.stringify(SEED)); }
+  }
+  function saveProducts(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(products)); }
+  function loadCart(){
+    try{ cart = JSON.parse(localStorage.getItem(CART_KEY)) || {}; }catch(e){ cart = {}; }
+  }
+  function saveCart(){ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
+
+  // ---------- helpers ----------
+  function money(n){ return "$" + Number(n).toFixed(2); }
+  function byId(id){ return products.find(p => p.id === id); }
+  function uid(){ return "p" + Math.random().toString(36).slice(2,9); }
+  function tileColor(cat){ return CATEGORY_TILE[cat] || "#3c5a3f"; }
+  function toast(msg){
+    const host = document.getElementById("toast-host");
+    const el = document.createElement("div");
+    el.className = "toast";
+    el.textContent = msg;
+    host.appendChild(el);
+    requestAnimationFrame(()=> el.classList.add("show"));
+    setTimeout(()=>{ el.classList.remove("show"); setTimeout(()=> el.remove(), 250); }, 2200);
+  }
+
+  // ---------- rendering: shop ----------
+  function renderFilters(){
+    const cats = ["All", ...Array.from(new Set(products.map(p=>p.category)))];
+    const bar = document.getElementById("filter-bar");
+    bar.innerHTML = "";
+    cats.forEach(c=>{
+      const b = document.createElement("button");
+      b.className = "pill" + (c===activeCategory ? " active" : "");
+      b.textContent = c;
+      b.addEventListener("click", ()=>{ activeCategory = c; renderFilters(); renderGrid(); });
+      bar.appendChild(b);
+    });
+  }
+
+  function renderGrid(){
+    const grid = document.getElementById("product-grid");
+    grid.innerHTML = "";
+    const list = products.filter(p => activeCategory === "All" || p.category === activeCategory);
+    if(list.length === 0){
+      grid.innerHTML = '<p class="empty-note">Nothing here yet. Add products from the Admin tab.</p>';
+    }
+    list.forEach(p=>{
+      const card = document.createElement("div");
+      card.className = "tag-card";
+      const low = p.stock > 0 && p.stock < 5;
+      const out = p.stock <= 0;
+      card.innerHTML = `
+        <div class="punch"></div>
+        <div class="tile" style="background:${tileColor(p.category)}">${p.icon || "🐾"}</div>
+        <div class="cat">${p.category}</div>
+        <h3>${escapeHtml(p.name)}</h3>
+        <p class="desc">${escapeHtml(p.desc || "")}</p>
+        <div class="row">
+          <span class="price">${money(p.price)}</span>
+          ${out ? '<span class="stock-low">OUT OF STOCK</span>' : (low ? `<span class="stock-low">${p.stock} LEFT</span>` : "")}
+        </div>
+        <div class="row" style="margin-top:12px;">
+          <button class="link-btn" data-quickview="${p.id}" style="padding-left:0;">Quick view →</button>
+          <button class="add-btn" data-add="${p.id}" ${out ? "disabled" : ""}>Add to cart</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+    grid.querySelectorAll("[data-add]").forEach(b=> b.addEventListener("click", ()=> addToCart(b.dataset.add)));
+    grid.querySelectorAll("[data-quickview]").forEach(b=> b.addEventListener("click", ()=> openQuickView(b.dataset.quickview)));
+    document.getElementById("stat-products").textContent = products.length;
+    document.getElementById("stat-categories").textContent = new Set(products.map(p=>p.category)).size;
+  }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+  }
+
+  function openQuickView(id){
+    const p = byId(id);
+    if(!p) return;
+    const modal = document.getElementById("quickview-modal");
+    const out = p.stock <= 0;
+    modal.innerHTML = `
+      <div class="tile" style="background:${tileColor(p.category)}; height:160px; font-size:4rem; margin-bottom:18px;">${p.icon||"🐾"}</div>
+      <div class="cat" style="margin-bottom:6px;">${p.category} · SKU ${escapeHtml(p.sku)}</div>
+      <h2 style="margin-bottom:8px;">${escapeHtml(p.name)}</h2>
+      <p class="sub" style="margin-bottom:18px;">${escapeHtml(p.desc||"")}</p>
+      <div class="row" style="margin-bottom:22px;">
+        <span class="price" style="font-size:1.4rem;">${money(p.price)}</span>
+        <span class="badge ${p.stock<5?'low':''}">${out ? "Out of stock" : p.stock + " in stock"}</span>
+      </div>
+      <div class="modal-actions" style="justify-content:stretch;">
+        <button class="checkout-btn" id="qv-add" ${out?"disabled":""} style="width:100%;">Add to cart</button>
+      </div>
+    `;
+    document.getElementById("qv-add").addEventListener("click", ()=>{ addToCart(p.id); closeQuickView(); });
+    document.getElementById("quickview-scrim").classList.add("open");
+  }
+  function closeQuickView(){ document.getElementById("quickview-scrim").classList.remove("open"); }
+
+  // ---------- cart ----------
+  function addToCart(id){
+    const p = byId(id);
+    if(!p || p.stock <= 0) return;
+    const current = cart[id] || 0;
+    if(current >= p.stock){ toast("That's all we have in stock!"); return; }
+    cart[id] = current + 1;
+    saveCart();
+    renderCart();
+    toast(`${p.name} added to cart`);
+  }
+  function changeQty(id, delta){
+    const p = byId(id);
+    if(!p) return;
+    let q = (cart[id]||0) + delta;
+    if(q <= 0){ delete cart[id]; }
+    else if(q > p.stock){ toast("No more stock available"); return; }
+    else { cart[id] = q; }
+    saveCart();
+    renderCart();
+  }
+  function removeFromCart(id){ delete cart[id]; saveCart(); renderCart(); }
+
+  function renderCart(){
+    const wrap = document.getElementById("cart-items");
+    const ids = Object.keys(cart).filter(id => byId(id));
+    let total = 0, count = 0;
+    wrap.innerHTML = "";
+    if(ids.length === 0){
+      wrap.innerHTML = '<p class="empty-note" style="padding:30px 0;">Your cart is empty.</p>';
+    }
+    ids.forEach(id=>{
+      const p = byId(id);
+      const qty = cart[id];
+      total += p.price * qty;
+      count += qty;
+      const row = document.createElement("div");
+      row.className = "cart-line";
+      row.innerHTML = `
+        <div class="tile-sm" style="background:${tileColor(p.category)}">${p.icon||"🐾"}</div>
+        <div class="info">
+          <h4>${escapeHtml(p.name)}</h4>
+          <span class="mono" style="color:var(--sage); font-size:0.82rem;">${money(p.price)}</span>
+          <div class="qty-row">
+            <button data-dec="${id}">−</button>
+            <span>${qty}</span>
+            <button data-inc="${id}">+</button>
+            <button class="remove-link" data-remove="${id}">Remove</button>
+          </div>
+        </div>
+      `;
+      wrap.appendChild(row);
+    });
+    wrap.querySelectorAll("[data-inc]").forEach(b=> b.addEventListener("click", ()=> changeQty(b.dataset.inc, 1)));
+    wrap.querySelectorAll("[data-dec]").forEach(b=> b.addEventListener("click", ()=> changeQty(b.dataset.dec, -1)));
+    wrap.querySelectorAll("[data-remove]").forEach(b=> b.addEventListener("click", ()=> removeFromCart(b.dataset.remove)));
+    document.getElementById("cart-subtotal").textContent = money(total);
+    document.getElementById("cart-count").textContent = count;
+    document.getElementById("checkout-btn").disabled = ids.length === 0;
+  }
+
+  function openCart(){ document.getElementById("cart-drawer").classList.add("open"); document.getElementById("cart-scrim").classList.add("open"); }
+  function closeCart(){ document.getElementById("cart-drawer").classList.remove("open"); document.getElementById("cart-scrim").classList.remove("open"); }
+
+  function checkout(){
+    const ids = Object.keys(cart).filter(id=>byId(id));
+    if(ids.length === 0) return;
+    ids.forEach(id=>{
+      const p = byId(id);
+      p.stock = Math.max(0, p.stock - cart[id]);
+    });
+    saveProducts();
+    cart = {};
+    saveCart();
+    renderCart();
+    renderGrid();
+    renderAdmin();
+    closeCart();
+    const orderId = "FRW-" + Date.now().toString(36).toUpperCase();
+    document.getElementById("order-id-display").textContent = "Order #" + orderId;
+    document.getElementById("confirm-scrim").classList.add("open");
+  }
+
+  // ---------- admin ----------
+  function renderAdmin(){
+    const tbody = document.getElementById("admin-tbody");
+    tbody.innerHTML = "";
+    products.forEach(p=>{
+      const tr = document.createElement("tr");
+      const low = p.stock < 5;
+      tr.innerHTML = `
+        <td><span class="row-icon" style="background:${tileColor(p.category)}">${p.icon||"🐾"}</span>${escapeHtml(p.name)}</td>
+        <td>${p.category}</td>
+        <td class="mono" style="color:var(--sage);">${escapeHtml(p.sku)}</td>
+        <td class="mono">${money(p.price)}</td>
+        <td><span class="badge ${low?'low':''}">${p.stock}</span></td>
+        <td style="text-align:right;">
+          <button class="link-btn" data-edit="${p.id}">Edit</button>
+          <button class="link-btn danger" data-del="${p.id}">Delete</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+    tbody.querySelectorAll("[data-edit]").forEach(b=> b.addEventListener("click", ()=> openProductForm(b.dataset.edit)));
+    tbody.querySelectorAll("[data-del]").forEach(b=> b.addEventListener("click", ()=> deleteProduct(b.dataset.del)));
+
+    document.getElementById("a-total").textContent = products.length;
+    document.getElementById("a-value").textContent = "$" + products.reduce((s,p)=> s + p.price*p.stock, 0).toFixed(0);
+    document.getElementById("a-units").textContent = products.reduce((s,p)=> s + p.stock, 0);
+    document.getElementById("a-low").textContent = products.filter(p=>p.stock < 5).length;
+  }
+
+  function deleteProduct(id){
+    const p = byId(id);
+    if(!p) return;
+    if(!confirm(`Delete "${p.name}"? This can't be undone.`)) return;
+    products = products.filter(x=>x.id !== id);
+    saveProducts();
+    renderAll();
+    toast("Product deleted");
+  }
+
+  function openProductForm(id){
+    editingId = id || null;
+    const form = document.getElementById("product-form");
+    form.reset();
+    if(id){
+      const p = byId(id);
+      document.getElementById("pf-title").textContent = "Edit product";
+      document.getElementById("pf-id").value = p.id;
+      document.getElementById("pf-name").value = p.name;
+      document.getElementById("pf-sku").value = p.sku;
+      document.getElementById("pf-category").value = p.category;
+      document.getElementById("pf-icon").value = p.icon || "";
+      document.getElementById("pf-price").value = p.price;
+      document.getElementById("pf-stock").value = p.stock;
+      document.getElementById("pf-desc").value = p.desc || "";
+    } else {
+      document.getElementById("pf-title").textContent = "Add product";
+      document.getElementById("pf-id").value = "";
+    }
+    document.getElementById("product-form-scrim").classList.add("open");
+  }
+  function closeProductForm(){ document.getElementById("product-form-scrim").classList.remove("open"); }
+
+  function saveProductForm(e){
+    e.preventDefault();
+    const id = document.getElementById("pf-id").value || uid();
+    const data = {
+      id,
+      name: document.getElementById("pf-name").value.trim(),
+      sku: document.getElementById("pf-sku").value.trim(),
+      category: document.getElementById("pf-category").value,
+      icon: document.getElementById("pf-icon").value.trim() || "🐾",
+      price: parseFloat(document.getElementById("pf-price").value) || 0,
+      stock: parseInt(document.getElementById("pf-stock").value) || 0,
+      desc: document.getElementById("pf-desc").value.trim()
+    };
+    if(!data.name || !data.sku){ toast("Name and SKU are required"); return; }
+    const idx = products.findIndex(p=>p.id === id);
+    if(idx >= 0){ products[idx] = data; } else { products.push(data); }
+    saveProducts();
+    renderAll();
+    closeProductForm();
+    toast(idx >= 0 ? "Product updated" : "Product added");
+  }
+
+  // ---------- CSV ----------
+  function parseCSV(text){
+    const rows = [];
+    let row = [], field = "", inQuotes = false;
+    for(let i=0;i<text.length;i++){
+      const c = text[i];
+      if(inQuotes){
+        if(c === '"'){
+          if(text[i+1] === '"'){ field += '"'; i++; } else { inQuotes = false; }
+        } else { field += c; }
+      } else {
+        if(c === '"'){ inQuotes = true; }
+        else if(c === ','){ row.push(field); field = ""; }
+        else if(c === '\n'){ row.push(field); rows.push(row); row=[]; field=""; }
+        else if(c === '\r'){ /* skip */ }
+        else { field += c; }
+      }
+    }
+    if(field.length || row.length){ row.push(field); rows.push(row); }
+    return rows.filter(r => r.length > 1 || (r[0] && r[0].trim() !== ""));
+  }
+
+  function csvEscape(v){
+    v = String(v ?? "");
+    if(/[",\n]/.test(v)) return '"' + v.replace(/"/g,'""') + '"';
+    return v;
+  }
+
+  function exportCSV(){
+    const headers = ["sku","name","category","price","stock","icon","desc"];
+    const lines = [headers.join(",")];
+    products.forEach(p=>{
+      lines.push(headers.map(h=> csvEscape(p[h])).join(","));
+    });
+    const blob = new Blob([lines.join("\n")], {type:"text/csv"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "furrow-products.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    toast("Exported " + products.length + " products");
+  }
+
+  function importCSV(file){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      const rows = parseCSV(String(e.target.result));
+      if(rows.length < 2){ toast("CSV looks empty"); return; }
+      const headers = rows[0].map(h=>h.trim().toLowerCase());
+      let added = 0, updated = 0;
+      for(let i=1;i<rows.length;i++){
+        const r = rows[i];
+        if(r.every(c => !c || !c.trim())) continue;
+        const rec = {};
+        headers.forEach((h,idx)=> rec[h] = r[idx] !== undefined ? r[idx].trim() : "");
+        if(!rec.name || !rec.sku) continue;
+        const existingIdx = products.findIndex(p => p.sku.toLowerCase() === rec.sku.toLowerCase());
+        const data = {
+          id: existingIdx >= 0 ? products[existingIdx].id : uid(),
+          name: rec.name,
+          sku: rec.sku,
+          category: rec.category || "Accessories",
+          price: parseFloat(rec.price) || 0,
+          stock: parseInt(rec.stock) || 0,
+          icon: rec.icon || "🐾",
+          desc: rec.desc || rec.description || ""
+        };
+        if(existingIdx >= 0){ products[existingIdx] = data; updated++; }
+        else { products.push(data); added++; }
+      }
+      saveProducts();
+      renderAll();
+      toast(`Imported: ${added} added, ${updated} updated`);
+    };
+    reader.readAsText(file);
+  }
+
+  // ---------- nav ----------
+  function showShop(){
+    document.getElementById("shop-view").classList.remove("hide");
+    document.getElementById("admin-view").classList.add("hide");
+    document.getElementById("nav-shop").classList.add("active");
+    document.getElementById("nav-admin").classList.remove("active");
+  }
+  function showAdmin(){
+    document.getElementById("admin-view").classList.remove("hide");
+    document.getElementById("shop-view").classList.add("hide");
+    document.getElementById("nav-admin").classList.add("active");
+    document.getElementById("nav-shop").classList.remove("active");
+    renderAdmin();
+  }
+
+  function renderAll(){
+    renderFilters();
+    renderGrid();
+    renderCart();
+    renderAdmin();
+  }
+
+  // ---------- wire up ----------
+  document.getElementById("nav-shop").addEventListener("click", showShop);
+  document.getElementById("nav-admin").addEventListener("click", showAdmin);
+  document.getElementById("open-cart").addEventListener("click", openCart);
+  document.getElementById("close-cart").addEventListener("click", closeCart);
+  document.getElementById("cart-scrim").addEventListener("click", closeCart);
+  document.getElementById("checkout-btn").addEventListener("click", checkout);
+  document.getElementById("confirm-close").addEventListener("click", ()=> document.getElementById("confirm-scrim").classList.remove("open"));
+  document.getElementById("quickview-scrim").addEventListener("click", (e)=>{ if(e.target.id === "quickview-scrim") closeQuickView(); });
+
+  document.getElementById("btn-add-product").addEventListener("click", ()=> openProductForm(null));
+  document.getElementById("pf-cancel").addEventListener("click", closeProductForm);
+  document.getElementById("product-form-scrim").addEventListener("click", (e)=>{ if(e.target.id === "product-form-scrim") closeProductForm(); });
+  document.getElementById("product-form").addEventListener("submit", saveProductForm);
+
+  document.getElementById("btn-export").addEventListener("click", exportCSV);
+  document.getElementById("btn-import-trigger").addEventListener("click", ()=> document.getElementById("csv-input").click());
+  document.getElementById("csv-input").addEventListener("change", (e)=>{
+    const file = e.target.files[0];
+    if(file) importCSV(file);
+    e.target.value = "";
+  });
+
+  // ---------- init ----------
+  loadProducts();
+  loadCart();
+  // drop cart entries for products that no longer exist / exceed stock
+  Object.keys(cart).forEach(id=>{ if(!byId(id)) delete cart[id]; });
+  renderAll();
+})();
+</script>
+
+</body>
+</html>
