@@ -333,7 +333,7 @@
 
     <div class="stat-cards">
       <div class="stat-card"><span class="n" id="a-total">0</span><span class="l">Total products</span></div>
-      <div class="stat-card"><span class="n" id="a-value">$0</span><span class="l">Inventory value</span></div>
+      <div class="stat-card"><span class="n" id="a-value">R0</span><span class="l">Inventory value</span></div>
       <div class="stat-card"><span class="n" id="a-units">0</span><span class="l">Units in stock</span></div>
       <div class="stat-card warn"><span class="n" id="a-low">0</span><span class="l">Low stock (&lt;5)</span></div>
     </div>
@@ -356,7 +356,7 @@
   <div class="cart-items" id="cart-items"></div>
   <div class="drawer-foot">
     <div class="ship-note" id="ship-note"></div>
-    <div class="subtotal-row"><span>Subtotal</span><strong class="mono" id="cart-subtotal">$0.00</strong></div>
+    <div class="subtotal-row"><span>Subtotal</span><strong class="mono" id="cart-subtotal">R0.00</strong></div>
     <button class="checkout-btn" id="checkout-btn">Checkout</button>
   </div>
 </aside>
@@ -421,7 +421,7 @@
         </div>
       </div>
       <div class="field-row">
-        <div class="field"><label>Price (USD) *</label><input id="pf-price" type="number" step="0.01" min="0" required /></div>
+        <div class="field"><label>Price (ZAR) *</label><input id="pf-price" type="number" step="0.01" min="0" required /></div>
         <div class="field"><label>Stock *</label><input id="pf-stock" type="number" min="0" required /></div>
       </div>
       <div class="field"><label>Description</label><textarea id="pf-desc" placeholder="One short sentence about the product"></textarea></div>
@@ -446,7 +446,7 @@
   const CATEGORY_TILE = { Food:"#FFE8D6", Toys:"#FFF3C4", Grooming:"#D8E9FF", Accessories:"#FBD7EC", Health:"#D6F5E8", Beds:"#E6DBFF" };
   const PET_EMOJI = { Dog:"🐶", Cat:"🐱", "Small Pet":"🐹" };
   const TRUST_BADGES = [
-    {icon:"🚚", text:"Free shipping on orders over $49"},
+    {icon:"🚚", text:"Free shipping on orders over R899"},
     {icon:"↩", text:"30-day money-back guarantee"},
     {icon:"🔒", text:"Secure checkout, every order"}
   ];
@@ -461,25 +461,25 @@
   ];
 
   const SEED = [
-    {id:"p1",  sku:"RBP-FD-001", name:"Slow-Cooked Bone Broth", pet:"Dog", category:"Food", price:14.5, stock:32, icon:"🍲", desc:"Simmered 18 hours, no sodium, tail-wag guaranteed.", specs:["No added sodium","Simmered 18 hours","Shelf-stable, 12 pack","Made in small batches"]},
-    {id:"p2",  sku:"RBP-FD-002", name:"Grain-Free Salmon Kibble", pet:"Dog", category:"Food", price:38, stock:20, icon:"🐟", desc:"Cold-water salmon, sweet potato, single protein.", specs:["Single-source protein","Grain-free formula","12 lb bag","No artificial preservatives"]},
-    {id:"p3",  sku:"RBP-FD-003", name:"Freeze-Dried Liver Bites", pet:"Dog", category:"Food", price:9.75, stock:3, icon:"🥩", desc:"One ingredient. Extremely serious business to most dogs.", specs:["Single ingredient","Freeze-dried, not baked","High-value training treat","3 oz resealable bag"]},
-    {id:"p4",  sku:"RBP-TY-001", name:"Knotted Rope Tug", pet:"Dog", category:"Toys", price:12, stock:41, icon:"🪢", desc:"Cotton rope, dyed with plant pigment, machine washable.", specs:["100% cotton","Plant-based dye","Machine washable","Helps clean teeth while chewing"]},
-    {id:"p5",  sku:"RBP-TY-002", name:"Squeaky Duck Classic", pet:"Dog", category:"Toys", price:8.5, stock:4, icon:"🦆", desc:"The original. Reinforced seams for power chewers.", specs:["Reinforced double-stitched seams","Built-in squeaker","Machine washable","Best for light-medium chewers"]},
-    {id:"p6",  sku:"RBP-TY-003", name:"Feather Wand", pet:"Cat", category:"Toys", price:10, stock:27, icon:"🪶", desc:"Real feathers, telescoping wand, hours of chaos.", specs:["Telescoping handle","Natural feathers","Replaceable attachment","36 inch extended length"]},
-    {id:"p7",  sku:"RBP-GR-001", name:"Oatmeal Shampoo Bar", pet:"Dog", category:"Grooming", price:11, stock:18, icon:"🧼", desc:"Sensitive-skin formula, zero plastic bottle.", specs:["Colloidal oatmeal formula","Plastic-free bar","pH balanced for dogs","Unscented"]},
-    {id:"p8",  sku:"RBP-GR-002", name:"Slicker Brush", pet:"Cat", category:"Grooming", price:16, stock:2, icon:"🪮", desc:"Fine pins for undercoat season. Handle fits any grip.", specs:["Fine stainless pins","Ergonomic non-slip handle","Self-cleaning button release","Best for medium-long coats"]},
-    {id:"p9",  sku:"RBP-AC-001", name:"Waxed Canvas Leash", pet:"Dog", category:"Accessories", price:29, stock:15, icon:"🦮", desc:"Hand-waxed cotton canvas, brass hardware, 6ft.", specs:["Hand-waxed cotton canvas","Solid brass clasp","6 ft length","Padded handle"]},
-    {id:"p10", sku:"RBP-AC-002", name:"Engraved Brass Tag", pet:"Dog", category:"Accessories", price:13, stock:60, icon:"🏷️", desc:"Free engraving, ships in 2 days.", specs:["Solid brass, won't rust","Free custom engraving","Fits any standard collar ring","Ships within 2 business days"]},
-    {id:"p11", sku:"RBP-HL-001", name:"Salmon Oil Supplement", pet:"Dog", category:"Health", price:19.5, stock:9, icon:"💊", desc:"Omega-3 for coat health, pump bottle, 16oz.", specs:["Wild-caught salmon oil","Supports coat & skin health","Easy pump dispenser","16 oz bottle"]},
-    {id:"p12", sku:"RBP-HL-002", name:"Joint Support Chews", pet:"Dog", category:"Health", price:24, stock:1, icon:"🦴", desc:"Glucosamine + turmeric, chicken flavored.", specs:["Glucosamine & chondroitin","Turmeric for inflammation support","Chicken flavored","90-chew supply"]},
-    {id:"p13", sku:"RBP-BD-001", name:"Linen Bolster Bed (M)", pet:"Dog", category:"Beds", price:64, stock:11, icon:"🛏️", desc:"Removable washable cover, memory foam base.", specs:["Memory foam base","Removable machine-washable cover","Water-resistant liner","Fits dogs up to 50 lbs"]},
-    {id:"p14", sku:"RBP-BD-002", name:"Cave Bed", pet:"Cat", category:"Beds", price:42, stock:7, icon:"🐈", desc:"Wool felt, hand-shaped, holds its dome shape for years.", specs:["100% wool felt","Hand-shaped, holds form","Machine washable cover","One size fits most cats"]},
-    {id:"p15", sku:"RBP-FD-004", name:"Timothy Hay Feeder Pack", pet:"Small Pet", category:"Food", price:15, stock:24, icon:"🌾", desc:"Sun-cured timothy hay, high fiber, small-batch baled.", specs:["Sun-cured timothy hay","High fiber content","Small-batch baled","5 lb resealable bag"]},
-    {id:"p16", sku:"RBP-TY-004", name:"Silent Spin Wheel", pet:"Small Pet", category:"Toys", price:22, stock:13, icon:"🎡", desc:"Ultra-quiet bearing system for nighttime runners.", specs:["Silent bearing system","11 inch running surface","Free-standing, no stand needed","Easy-clean solid surface"]},
-    {id:"p17", sku:"RBP-BD-003", name:"Fleece Cage Liner", pet:"Small Pet", category:"Beds", price:18, stock:16, icon:"🧺", desc:"Absorbent fleece top layer over a leak-proof base.", specs:["Absorbent top layer","Leak-proof waterproof base","Machine washable","Fits standard C&C cages"]},
-    {id:"p18", sku:"RBP-AC-003", name:"Sisal Scratching Post", pet:"Cat", category:"Accessories", price:34, stock:8, icon:"🐈", desc:"Natural sisal wrap on a weighted, wobble-free base.", specs:["Natural sisal rope wrap","Weighted non-wobble base","32 inch height","Includes hanging toy"]},
-    {id:"p19", sku:"RBP-TY-005", name:"Catnip Mice 3-Pack", pet:"Cat", category:"Toys", price:7.5, stock:38, icon:"🐭", desc:"Organic catnip stuffed into durable felt mice.", specs:["Organic catnip filling","Durable felt construction","Set of 3","Machine washable"]}
+    {id:"p1",  sku:"RBP-FD-001", name:"Slow-Cooked Bone Broth", pet:"Dog", category:"Food", price:259, stock:32, icon:"🍲", desc:"Simmered 18 hours, no sodium, tail-wag guaranteed.", specs:["No added sodium","Simmered 18 hours","Shelf-stable, 12 pack","Made in small batches"]},
+    {id:"p2",  sku:"RBP-FD-002", name:"Grain-Free Salmon Kibble", pet:"Dog", category:"Food", price:699, stock:20, icon:"🐟", desc:"Cold-water salmon, sweet potato, single protein.", specs:["Single-source protein","Grain-free formula","12 lb bag","No artificial preservatives"]},
+    {id:"p3",  sku:"RBP-FD-003", name:"Freeze-Dried Liver Bites", pet:"Dog", category:"Food", price:179, stock:3, icon:"🥩", desc:"One ingredient. Extremely serious business to most dogs.", specs:["Single ingredient","Freeze-dried, not baked","High-value training treat","3 oz resealable bag"]},
+    {id:"p4",  sku:"RBP-TY-001", name:"Knotted Rope Tug", pet:"Dog", category:"Toys", price:219, stock:41, icon:"🪢", desc:"Cotton rope, dyed with plant pigment, machine washable.", specs:["100% cotton","Plant-based dye","Machine washable","Helps clean teeth while chewing"]},
+    {id:"p5",  sku:"RBP-TY-002", name:"Squeaky Duck Classic", pet:"Dog", category:"Toys", price:159, stock:4, icon:"🦆", desc:"The original. Reinforced seams for power chewers.", specs:["Reinforced double-stitched seams","Built-in squeaker","Machine washable","Best for light-medium chewers"]},
+    {id:"p6",  sku:"RBP-TY-003", name:"Feather Wand", pet:"Cat", category:"Toys", price:179, stock:27, icon:"🪶", desc:"Real feathers, telescoping wand, hours of chaos.", specs:["Telescoping handle","Natural feathers","Replaceable attachment","36 inch extended length"]},
+    {id:"p7",  sku:"RBP-GR-001", name:"Oatmeal Shampoo Bar", pet:"Dog", category:"Grooming", price:199, stock:18, icon:"🧼", desc:"Sensitive-skin formula, zero plastic bottle.", specs:["Colloidal oatmeal formula","Plastic-free bar","pH balanced for dogs","Unscented"]},
+    {id:"p8",  sku:"RBP-GR-002", name:"Slicker Brush", pet:"Cat", category:"Grooming", price:289, stock:2, icon:"🪮", desc:"Fine pins for undercoat season. Handle fits any grip.", specs:["Fine stainless pins","Ergonomic non-slip handle","Self-cleaning button release","Best for medium-long coats"]},
+    {id:"p9",  sku:"RBP-AC-001", name:"Waxed Canvas Leash", pet:"Dog", category:"Accessories", price:529, stock:15, icon:"🦮", desc:"Hand-waxed cotton canvas, brass hardware, 6ft.", specs:["Hand-waxed cotton canvas","Solid brass clasp","6 ft length","Padded handle"]},
+    {id:"p10", sku:"RBP-AC-002", name:"Engraved Brass Tag", pet:"Dog", category:"Accessories", price:239, stock:60, icon:"🏷️", desc:"Free engraving, ships in 2 days.", specs:["Solid brass, won't rust","Free custom engraving","Fits any standard collar ring","Ships within 2 business days"]},
+    {id:"p11", sku:"RBP-HL-001", name:"Salmon Oil Supplement", pet:"Dog", category:"Health", price:349, stock:9, icon:"💊", desc:"Omega-3 for coat health, pump bottle, 16oz.", specs:["Wild-caught salmon oil","Supports coat & skin health","Easy pump dispenser","16 oz bottle"]},
+    {id:"p12", sku:"RBP-HL-002", name:"Joint Support Chews", pet:"Dog", category:"Health", price:429, stock:1, icon:"🦴", desc:"Glucosamine + turmeric, chicken flavored.", specs:["Glucosamine & chondroitin","Turmeric for inflammation support","Chicken flavored","90-chew supply"]},
+    {id:"p13", sku:"RBP-BD-001", name:"Linen Bolster Bed (M)", pet:"Dog", category:"Beds", price:1149, stock:11, icon:"🛏️", desc:"Removable washable cover, memory foam base.", specs:["Memory foam base","Removable machine-washable cover","Water-resistant liner","Fits dogs up to 50 lbs"]},
+    {id:"p14", sku:"RBP-BD-002", name:"Cave Bed", pet:"Cat", category:"Beds", price:749, stock:7, icon:"🐈", desc:"Wool felt, hand-shaped, holds its dome shape for years.", specs:["100% wool felt","Hand-shaped, holds form","Machine washable cover","One size fits most cats"]},
+    {id:"p15", sku:"RBP-FD-004", name:"Timothy Hay Feeder Pack", pet:"Small Pet", category:"Food", price:269, stock:24, icon:"🌾", desc:"Sun-cured timothy hay, high fiber, small-batch baled.", specs:["Sun-cured timothy hay","High fiber content","Small-batch baled","5 lb resealable bag"]},
+    {id:"p16", sku:"RBP-TY-004", name:"Silent Spin Wheel", pet:"Small Pet", category:"Toys", price:399, stock:13, icon:"🎡", desc:"Ultra-quiet bearing system for nighttime runners.", specs:["Silent bearing system","11 inch running surface","Free-standing, no stand needed","Easy-clean solid surface"]},
+    {id:"p17", sku:"RBP-BD-003", name:"Fleece Cage Liner", pet:"Small Pet", category:"Beds", price:329, stock:16, icon:"🧺", desc:"Absorbent fleece top layer over a leak-proof base.", specs:["Absorbent top layer","Leak-proof waterproof base","Machine washable","Fits standard C&C cages"]},
+    {id:"p18", sku:"RBP-AC-003", name:"Sisal Scratching Post", pet:"Cat", category:"Accessories", price:599, stock:8, icon:"🐈", desc:"Natural sisal wrap on a weighted, wobble-free base.", specs:["Natural sisal rope wrap","Weighted non-wobble base","32 inch height","Includes hanging toy"]},
+    {id:"p19", sku:"RBP-TY-005", name:"Catnip Mice 3-Pack", pet:"Cat", category:"Toys", price:139, stock:38, icon:"🐭", desc:"Organic catnip stuffed into durable felt mice.", specs:["Organic catnip filling","Durable felt construction","Set of 3","Machine washable"]}
   ];
 
   let products = [];
@@ -534,7 +534,7 @@
   function saveCart(){ localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
 
   // ---------- helpers ----------
-  function money(n){ return "$" + Number(n).toFixed(2); }
+  function money(n){ return "R" + Number(n).toFixed(2); }
   function byId(id){ return products.find(p => p.id === id); }
   function uid(){ return "p" + Math.random().toString(36).slice(2,9); }
   function tileColor(cat){ return CATEGORY_TILE[cat] || "#E6DBFF"; }
@@ -867,7 +867,7 @@
     document.getElementById("cart-subtotal").textContent = money(total);
     document.getElementById("cart-count").textContent = count;
     document.getElementById("checkout-btn").disabled = ids.length === 0;
-    const remaining = Math.max(0, 49 - total);
+    const remaining = Math.max(0, 899 - total);
     document.getElementById("ship-note").textContent = ids.length === 0 ? "" : (remaining > 0 ? `Add ${money(remaining)} more for free shipping` : "🚚 You've unlocked free shipping!");
   }
 
@@ -910,7 +910,7 @@
     tbody.querySelectorAll("[data-edit]").forEach(b=> b.addEventListener("click", ()=> openProductForm(b.dataset.edit)));
     tbody.querySelectorAll("[data-del]").forEach(b=> b.addEventListener("click", ()=> deleteProduct(b.dataset.del)));
     document.getElementById("a-total").textContent = products.length;
-    document.getElementById("a-value").textContent = "$" + products.reduce((s,p)=> s + p.price*p.stock, 0).toFixed(0);
+    document.getElementById("a-value").textContent = "R" + products.reduce((s,p)=> s + p.price*p.stock, 0).toFixed(0);
     document.getElementById("a-units").textContent = products.reduce((s,p)=> s + p.stock, 0);
     document.getElementById("a-low").textContent = products.filter(p=>p.stock < 5).length;
   }
