@@ -245,7 +245,14 @@
   .admin-subnav{ margin:0 0 28px; }
   .photos-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(210px,1fr)); gap:16px; padding-bottom:20px; }
   .photo-card{ background:var(--card); border:1px solid var(--card-line); border-radius:12px; padding:14px; }
-  .photo-thumb{ height:100px; border-radius:8px; overflow:hidden; display:flex; align-items:center; justify-content:center; font-size:2rem; margin-bottom:10px; }
+  .photo-thumb-strip{ display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+  .photo-slot{ width:56px; height:56px; border-radius:8px; flex-shrink:0; position:relative; overflow:hidden; }
+  .photo-slot.filled{ border:1px solid var(--card-line); }
+  .photo-slot.filled img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .photo-slot-remove{ position:absolute; top:2px; right:2px; width:18px; height:18px; border-radius:50%; background:#00000090; color:#fff; border:none; font-size:0.6rem; line-height:1; display:flex; align-items:center; justify-content:center; padding:0; }
+  .photo-slot-remove:hover{ background:#c2410c; }
+  .photo-slot.empty{ border:1.5px dashed var(--card-line); background:transparent; color:var(--sage); font-size:1.3rem; display:flex; align-items:center; justify-content:center; }
+  .photo-slot.empty:hover{ border-color:var(--mustard); color:var(--mustard); }
   .photo-meta h4{ margin:0 0 2px; font-size:0.88rem; font-weight:600; }
   .photo-meta .mono{ color:var(--sage); font-size:0.72rem; }
   .photo-actions{ margin-top:12px; display:flex; flex-direction:column; gap:7px; }
@@ -550,19 +557,11 @@
         </div>
         <div class="field"><label>Icon (emoji fallback)</label><input id="pf-icon" placeholder="🦴" maxlength="4" /></div>
       </div>
-      <div class="field">
-        <label>Product photo</label>
-        <div style="display:flex; gap:12px; align-items:flex-start;">
-          <div id="pf-image-preview" style="width:64px;height:64px;border-radius:10px;background:#0000000c;border:1px solid #00000026;display:flex;align-items:center;justify-content:center;font-size:1.6rem;overflow:hidden;flex-shrink:0;">🐾</div>
-          <div style="flex:1;">
-            <input id="pf-image-url" type="text" placeholder="Paste an image URL..." />
-            <div style="display:flex; gap:8px; margin-top:8px;">
-              <button type="button" class="btn-sm" id="pf-upload-trigger">Upload photo</button>
-              <button type="button" class="btn-sm" id="pf-image-clear">Remove photo</button>
-              <input type="file" id="pf-image-file" accept="image/*" />
-            </div>
-            <div class="hint">Upload a JPG or PNG (stored right in this browser, no server needed), or paste a link instead. Leave blank to use the emoji icon.</div>
-          </div>
+      <div class="field" id="pf-photo-field">
+        <label>Product photos</label>
+        <div style="display:flex; gap:12px; align-items:center;">
+          <div id="pf-image-preview" style="width:56px;height:56px;border-radius:10px;background:#0000000c;border:1px solid #00000026;display:flex;align-items:center;justify-content:center;font-size:1.5rem;overflow:hidden;flex-shrink:0;">🐾</div>
+          <div class="hint" style="margin:0;" id="pf-photo-hint">Photos are managed from the <strong>Product photos</strong> tab in Admin, so you can add up to 4 per item.</div>
         </div>
       </div>
       <div class="field-row">
@@ -702,9 +701,14 @@
   function uid(){ return "p" + Math.random().toString(36).slice(2,9); }
   function tileColor(cat){ return CATEGORY_TILE[cat] || "#E6DBFF"; }
   function attrSafe(v){ return String(v).replace(/"/g,"&quot;"); }
+  function getImages(p){
+    if(Array.isArray(p.images)) return p.images.filter(Boolean);
+    return p.image ? [p.image] : [];
+  }
   function mediaInner(p){
-    if(p.image){
-      return `<img src="${attrSafe(p.image)}" alt="${escapeHtml(p.name||'')}" style="width:100%;height:100%;object-fit:cover;" onerror="this.outerHTML='${(p.icon||'🐾')}';" />`;
+    const imgs = getImages(p);
+    if(imgs.length){
+      return `<img src="${attrSafe(imgs[0])}" alt="${escapeHtml(p.name||'')}" style="width:100%;height:100%;object-fit:cover;" onerror="this.outerHTML='${(p.icon||'🐾')}';" />`;
     }
     return p.icon || "🐾";
   }
@@ -964,11 +968,14 @@
     const low = p.stock > 0 && p.stock < 5;
     const rating = getRating(p);
     const rc = getReviewCount(p);
-    const gallery = [];
-    if(p.image) gallery.push({type:"image", value:p.image});
-    gallery.push({type:"emoji", value:p.icon||"🐾"});
-    gallery.push({type:"emoji", value:"📦"});
-    gallery.push({type:"emoji", value:"🏷️"});
+    const productImages = getImages(p);
+    const gallery = productImages.length
+      ? productImages.slice(0,4).map(v => ({type:"image", value:v}))
+      : [
+          {type:"emoji", value:p.icon||"🐾"},
+          {type:"emoji", value:"📦"},
+          {type:"emoji", value:"🏷️"}
+        ];
     const specs = p.specs && p.specs.length ? p.specs : ["No additional specs listed for this item."];
     const reviews = getReviews(p);
 
@@ -1198,22 +1205,18 @@
     toast("Product deleted");
   }
 
-  let pfImageData = null;
-
-  function updatePfPreview(){
+  function updatePfPreview(imgs, iconVal){
     const preview = document.getElementById("pf-image-preview");
-    const iconVal = document.getElementById("pf-icon").value.trim() || "🐾";
-    if(pfImageData){
-      preview.innerHTML = `<img src="${attrSafe(pfImageData)}" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.textContent='${iconVal}';" />`;
+    if(imgs && imgs.length){
+      preview.innerHTML = `<img src="${attrSafe(imgs[0])}" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.textContent='${iconVal||'🐾'}';" />`;
     } else {
-      preview.textContent = iconVal;
+      preview.textContent = iconVal || "🐾";
     }
   }
 
   function openProductForm(id){
     const form = document.getElementById("product-form");
     form.reset();
-    pfImageData = null;
     if(id){
       const p = byId(id);
       document.getElementById("pf-title").textContent = "Edit product";
@@ -1227,14 +1230,14 @@
       document.getElementById("pf-stock").value = p.stock;
       document.getElementById("pf-desc").value = p.desc || "";
       document.getElementById("pf-specs").value = (p.specs||[]).join("\n");
-      pfImageData = p.image || null;
-      document.getElementById("pf-image-url").value = (p.image && !p.image.startsWith("data:")) ? p.image : "";
+      updatePfPreview(getImages(p), p.icon);
+      document.getElementById("pf-photo-hint").innerHTML = "Photos are managed from the <strong>Product photos</strong> tab in Admin, so you can add up to 4 per item.";
     } else {
       document.getElementById("pf-title").textContent = "Add product";
       document.getElementById("pf-id").value = "";
-      document.getElementById("pf-image-url").value = "";
+      updatePfPreview([], "🐾");
+      document.getElementById("pf-photo-hint").innerHTML = "Save this product first, then add photos from the <strong>Product photos</strong> tab in Admin.";
     }
-    updatePfPreview();
     document.getElementById("product-form-scrim").classList.add("open");
   }
   function closeProductForm(){ document.getElementById("product-form-scrim").classList.remove("open"); }
@@ -1244,6 +1247,7 @@
     const id = document.getElementById("pf-id").value || uid();
     const isNew = !document.getElementById("pf-id").value;
     const specsRaw = document.getElementById("pf-specs").value.trim();
+    const existing = products.find(p => p.id === id);
     const data = {
       id,
       name: document.getElementById("pf-name").value.trim(),
@@ -1251,7 +1255,7 @@
       pet: document.getElementById("pf-pet").value,
       category: document.getElementById("pf-category").value,
       icon: document.getElementById("pf-icon").value.trim() || "🐾",
-      image: pfImageData || null,
+      images: existing ? getImages(existing) : [],
       price: parseFloat(document.getElementById("pf-price").value) || 0,
       stock: parseInt(document.getElementById("pf-stock").value) || 0,
       desc: document.getElementById("pf-desc").value.trim(),
@@ -1295,10 +1299,10 @@
   }
 
   function downloadTemplate(){
-    const headers = ["sku","name","pet","category","price","stock","icon","image","desc","specs"];
+    const headers = ["sku","name","pet","category","price","stock","icon","images","desc","specs"];
     const exampleRows = [
       ["EXAMPLE-001","Example Dog Toy","Dog","Toys","149","20","🎾","","A short one-sentence description.","Spec one | Spec two | Spec three"],
-      ["EXAMPLE-002","Example Cat Treat","Cat","Food","89","35","🐟","https://example.com/photo.jpg","Another short description.","Spec one | Spec two"]
+      ["EXAMPLE-002","Example Cat Treat","Cat","Food","89","35","🐟","https://example.com/photo1.jpg | https://example.com/photo2.jpg","Another short description.","Spec one | Spec two"]
     ];
     const lines = [headers.join(",")];
     exampleRows.forEach(r => lines.push(r.map(csvEscape).join(",")));
@@ -1307,10 +1311,14 @@
   }
 
   function exportCSV(){
-    const headers = ["sku","name","pet","category","price","stock","icon","image","desc","specs"];
+    const headers = ["sku","name","pet","category","price","stock","icon","images","desc","specs"];
     const lines = [headers.join(",")];
     products.forEach(p=>{
-      lines.push(headers.map(h=> h==="specs" ? csvEscape((p.specs||[]).join(" | ")) : csvEscape(p[h])).join(","));
+      lines.push(headers.map(h=>{
+        if(h==="specs") return csvEscape((p.specs||[]).join(" | "));
+        if(h==="images") return csvEscape(getImages(p).join(" | "));
+        return csvEscape(p[h]);
+      }).join(","));
     });
     downloadCsvFile(lines, "rainbows-pets-products.csv");
     toast("Exported " + products.length + " products");
@@ -1332,6 +1340,9 @@
         if(!rec.name || !rec.sku) continue;
         const existingIdx = products.findIndex(p => p.sku.toLowerCase() === rec.sku.toLowerCase());
         const existing = existingIdx >= 0 ? products[existingIdx] : null;
+        let images = existing ? getImages(existing) : [];
+        if(has("images")) images = rec.images ? rec.images.split("|").map(s=>s.trim()).filter(Boolean).slice(0,4) : [];
+        else if(has("image")) images = rec.image ? [rec.image] : [];
         const data = {
           id: existing ? existing.id : uid(),
           name: rec.name, sku: rec.sku,
@@ -1340,7 +1351,7 @@
           price: has("price") ? (parseFloat(rec.price) || 0) : (existing ? existing.price : 0),
           stock: has("stock") ? (parseInt(rec.stock) || 0) : (existing ? existing.stock : 0),
           icon: has("icon") ? (rec.icon || "🐾") : (existing ? existing.icon : "🐾"),
-          image: has("image") ? (rec.image || null) : (existing ? existing.image : null),
+          images: images,
           desc: (has("desc") || has("description")) ? (rec.desc || rec.description || "") : (existing ? existing.desc : ""),
           specs: has("specs") ? rec.specs.split("|").map(s=>s.trim()).filter(Boolean) : (existing ? existing.specs : []),
           _isNew: existing ? existing._isNew : true
@@ -1382,53 +1393,84 @@
     if(sub === "photos") renderPhotosGrid();
   }
 
+  const MAX_PRODUCT_IMAGES = 4;
+
   function renderPhotosGrid(){
     const wrap = document.getElementById("photos-grid");
-    wrap.innerHTML = products.map(p => `
-      <div class="photo-card" data-pid="${p.id}">
-        <div class="photo-thumb" style="background:${tileColor(p.category)}">${mediaInner(p)}</div>
-        <div class="photo-meta">
-          <h4>${escapeHtml(p.name)}</h4>
-          <span class="mono">${escapeHtml(p.sku)}</span>
+    wrap.innerHTML = products.map(p => {
+      const imgs = getImages(p);
+      const slots = imgs.map((img, i) => `
+        <div class="photo-slot filled">
+          <img src="${attrSafe(img)}" alt="" />
+          <button type="button" class="photo-slot-remove" data-photo-remove="${p.id}" data-idx="${i}" title="Remove this photo">✕</button>
         </div>
-        <div class="photo-actions">
-          <div class="row">
-            <button type="button" class="photo-btn" data-photo-upload="${p.id}">Upload</button>
-            <button type="button" class="photo-btn clear" data-photo-clear="${p.id}">Clear</button>
+      `).join("");
+      const addSlot = imgs.length < MAX_PRODUCT_IMAGES
+        ? `<button type="button" class="photo-slot empty" data-photo-add="${p.id}" title="Add a photo">+</button>`
+        : "";
+      return `
+        <div class="photo-card" data-pid="${p.id}">
+          <div class="photo-thumb-strip">${slots}${addSlot}</div>
+          <div class="photo-meta">
+            <h4>${escapeHtml(p.name)}</h4>
+            <span class="mono">${escapeHtml(p.sku)} · ${imgs.length}/${MAX_PRODUCT_IMAGES} photos</span>
           </div>
-          <input type="file" accept="image/*" class="hide photo-file-input" data-photo-file="${p.id}" />
-          <div class="row">
-            <input type="text" placeholder="or paste image URL" class="photo-url-input" data-photo-url="${p.id}" value="${p.image && !p.image.startsWith('data:') ? attrSafe(p.image) : ''}" />
-            <button type="button" class="photo-btn" data-photo-save="${p.id}">Save</button>
+          <div class="photo-actions">
+            <input type="file" accept="image/*" class="hide photo-file-input" data-photo-file="${p.id}" />
+            <div class="row">
+              <input type="text" placeholder="or paste image URL" class="photo-url-input" data-photo-url="${p.id}" />
+              <button type="button" class="photo-btn" data-photo-addurl="${p.id}">Add</button>
+            </div>
           </div>
         </div>
-      </div>
-    `).join("");
+      `;
+    }).join("");
   }
 
-  function setProductImage(pid, imageValue){
+  function addProductImage(pid, value){
     const p = byId(pid);
-    if(!p) return;
-    p.image = imageValue || null;
+    if(!p || !value) return;
+    const imgs = getImages(p).slice();
+    if(imgs.length >= MAX_PRODUCT_IMAGES){ toast(`Maximum ${MAX_PRODUCT_IMAGES} photos per product`); return; }
+    imgs.push(value);
+    p.images = imgs;
+    delete p.image;
     saveProducts();
     renderPhotosGrid();
     renderGrid();
     renderAdmin();
-    toast(imageValue ? "Photo updated" : "Photo cleared");
+    toast("Photo added");
+  }
+  function removeProductImage(pid, idx){
+    const p = byId(pid);
+    if(!p) return;
+    const imgs = getImages(p).slice();
+    imgs.splice(idx, 1);
+    p.images = imgs;
+    delete p.image;
+    saveProducts();
+    renderPhotosGrid();
+    renderGrid();
+    renderAdmin();
+    toast("Photo removed");
   }
 
   document.getElementById("photos-grid").addEventListener("click", (e)=>{
-    const uploadBtn = e.target.closest("[data-photo-upload]");
-    if(uploadBtn){
-      document.querySelector(`[data-photo-file="${uploadBtn.dataset.photoUpload}"]`).click();
+    const addBtn = e.target.closest("[data-photo-add]");
+    if(addBtn){
+      document.querySelector(`[data-photo-file="${addBtn.dataset.photoAdd}"]`).click();
       return;
     }
-    const clearBtn = e.target.closest("[data-photo-clear]");
-    if(clearBtn){ setProductImage(clearBtn.dataset.photoClear, null); return; }
-    const saveBtn = e.target.closest("[data-photo-save]");
-    if(saveBtn){
-      const input = document.querySelector(`[data-photo-url="${saveBtn.dataset.photoSave}"]`);
-      setProductImage(saveBtn.dataset.photoSave, input.value.trim());
+    const removeBtn = e.target.closest("[data-photo-remove]");
+    if(removeBtn){
+      removeProductImage(removeBtn.dataset.photoRemove, parseInt(removeBtn.dataset.idx, 10));
+      return;
+    }
+    const addUrlBtn = e.target.closest("[data-photo-addurl]");
+    if(addUrlBtn){
+      const input = document.querySelector(`[data-photo-url="${addUrlBtn.dataset.photoAddurl}"]`);
+      const val = input.value.trim();
+      if(val){ addProductImage(addUrlBtn.dataset.photoAddurl, val); input.value = ""; }
     }
   });
   document.getElementById("photos-grid").addEventListener("change", (e)=>{
@@ -1438,7 +1480,7 @@
       if(file.size > 2*1024*1024){ toast("Please use an image under 2MB"); e.target.value=""; return; }
       const pid = e.target.dataset.photoFile;
       const reader = new FileReader();
-      reader.onload = (ev)=> setProductImage(pid, ev.target.result);
+      reader.onload = (ev)=> addProductImage(pid, ev.target.result);
       reader.readAsDataURL(file);
       e.target.value = "";
     }
@@ -1462,31 +1504,6 @@
   document.getElementById("pf-cancel").addEventListener("click", closeProductForm);
   document.getElementById("product-form-scrim").addEventListener("click", (e)=>{ if(e.target.id === "product-form-scrim") closeProductForm(); });
   document.getElementById("product-form").addEventListener("submit", saveProductForm);
-  document.getElementById("pf-icon").addEventListener("input", ()=>{ if(!pfImageData) updatePfPreview(); });
-  document.getElementById("pf-image-url").addEventListener("input", (e)=>{
-    const val = e.target.value.trim();
-    pfImageData = val || null;
-    updatePfPreview();
-  });
-  document.getElementById("pf-upload-trigger").addEventListener("click", ()=> document.getElementById("pf-image-file").click());
-  document.getElementById("pf-image-file").addEventListener("change", (e)=>{
-    const file = e.target.files[0];
-    if(!file) return;
-    if(file.size > 2*1024*1024){ toast("Please use an image under 2MB"); e.target.value=""; return; }
-    const reader = new FileReader();
-    reader.onload = (ev)=>{
-      pfImageData = ev.target.result;
-      document.getElementById("pf-image-url").value = "";
-      updatePfPreview();
-    };
-    reader.readAsDataURL(file);
-    e.target.value = "";
-  });
-  document.getElementById("pf-image-clear").addEventListener("click", ()=>{
-    pfImageData = null;
-    document.getElementById("pf-image-url").value = "";
-    updatePfPreview();
-  });
 
   document.getElementById("btn-template").addEventListener("click", downloadTemplate);
   document.getElementById("btn-export").addEventListener("click", exportCSV);
