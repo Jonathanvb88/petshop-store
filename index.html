@@ -85,8 +85,9 @@
   .cart-btn{ position:relative; background: var(--mustard); color:#1c2018; border:none; padding:9px 15px; border-radius:999px; font-weight:700; font-size:0.86rem; display:flex; align-items:center; gap:7px; flex-shrink:0; }
   .cart-btn:hover{ background: var(--mustard-dim); }
   .cart-count{ background:#1c2018; color:var(--mustard); font-size:0.7rem; font-weight:700; min-width:18px; height:18px; border-radius:999px; display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; }
-  .pet-tabs{ display:flex; gap:6px; padding:12px 24px 0; border-bottom:1px solid #00000010; }
-  .pet-tab{ background:transparent; border:none; color:var(--cream-dim); font-weight:600; font-size:0.88rem; padding:10px 6px 12px; border-bottom:2px solid transparent; display:flex; align-items:center; gap:6px; }
+  .pet-tabs{ display:flex; gap:6px; padding:12px 24px 0; border-bottom:1px solid #00000010; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .pet-tabs::-webkit-scrollbar{ display:none; }
+  .pet-tab{ background:transparent; border:none; color:var(--cream-dim); font-weight:600; font-size:0.88rem; padding:10px 6px 12px; border-bottom:2px solid transparent; display:flex; align-items:center; gap:6px; white-space:nowrap; flex-shrink:0; }
   .pet-tab:hover{ color:var(--cream); }
   .pet-tab.active{ color:var(--mustard); border-bottom-color:var(--mustard); }
 
@@ -208,7 +209,7 @@
   .cart-line .info{ flex:1; min-width:0; }
   .cart-line .info h4{ margin:0 0 4px; font-size:0.92rem; font-weight:600; }
   .qty-row{ display:flex; align-items:center; gap:8px; margin-top:6px; }
-  .qty-row button{ width:22px; height:22px; border-radius:6px; border:1px solid #00000030; background:transparent; color:var(--cream); }
+  .qty-row button{ width:30px; height:30px; border-radius:7px; border:1px solid #00000030; background:transparent; color:var(--cream); font-size:1rem; }
   .qty-row span{ font-family:'JetBrains Mono',monospace; font-size:0.85rem; min-width:16px; text-align:center; }
   .remove-link{ background:none; border:none; color:var(--rust-dim); font-size:0.76rem; text-decoration:underline; padding:0; margin-left:auto; }
   .drawer-foot{ padding:18px 22px 24px; border-top:1px solid #00000014; }
@@ -305,6 +306,9 @@
     .spec-list{ grid-template-columns:1fr; }
     #banner-url-type{ margin-bottom:8px; }
     .banner-url-row{ grid-template-columns:1fr; }
+    .modal-scrim{ padding:10px; }
+    .modal{ padding:20px; }
+    .gallery-main{ height:240px; }
   }
 </style>
 </head>
