@@ -237,6 +237,19 @@
   .admin-head h1{ font-size:2rem; margin:0 0 6px; }
   .admin-head p{ color:var(--sage); margin:0; font-size:0.94rem; }
   .toolbar{ display:flex; gap:10px; flex-wrap:wrap; }
+
+  .banner-panel{ background:var(--card); border:1px solid var(--card-line); border-radius:14px; padding:24px; margin-bottom:34px; }
+  .banner-editor{ display:grid; grid-template-columns: 260px 1fr; gap:22px; margin-top:6px; }
+  .banner-preview{ height:150px; border-radius:12px; background:var(--bg-soft); border:1px solid var(--card-line); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .banner-preview video, .banner-preview img{ width:100%; height:100%; object-fit:cover; }
+  .banner-preview-empty{ color:var(--sage); font-size:0.8rem; text-align:center; padding:0 20px; }
+  .banner-controls .field{ margin-bottom:14px; }
+
+  /* ---------- live site banner ---------- */
+  .site-banner{ max-width:1180px; margin:0 auto 8px; padding:0 24px; border-radius:0; height:280px; position:relative; }
+  .site-banner-inner{ width:100%; height:100%; border-radius:16px; overflow:hidden; }
+  .site-banner video, .site-banner img{ width:100%; height:100%; object-fit:cover; display:block; }
+  @media (max-width:640px){ .site-banner{ height:180px; } }
   .stat-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:30px; }
   .stat-card{ background:var(--card); border:1px solid var(--card-line); border-radius:12px; padding:18px 20px; }
   .stat-card .n{ font-family:'Fraunces',serif; font-size:1.7rem; font-weight:600; display:block; }
@@ -327,6 +340,8 @@
     </div>
   </section>
 
+  <div class="site-banner hide" id="site-banner"></div>
+
   <div class="pet-tiles wrap" id="pet-tiles"></div>
 
   <div class="breadcrumb wrap" id="shop-breadcrumb"></div>
@@ -343,6 +358,45 @@
 <!-- ============ ADMIN VIEW ============ -->
 <main id="admin-view" class="hide">
   <div class="admin-wrap wrap">
+
+    <div class="banner-panel">
+      <div class="admin-head">
+        <div>
+          <h1 style="font-size:1.4rem;">Homepage banner</h1>
+          <p>Upload a short phone video or a poster image to show at the top of the site, in place of the default promo strip.</p>
+        </div>
+      </div>
+      <div class="banner-editor">
+        <div class="banner-preview" id="banner-preview">
+          <span class="banner-preview-empty">No banner set — the animated promo strip is showing instead</span>
+        </div>
+        <div class="banner-controls">
+          <div class="field">
+            <label>Upload video or photo</label>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button type="button" class="btn-sm" id="banner-upload-trigger">Upload from this device</button>
+              <input type="file" id="banner-file" accept="video/*,image/*" />
+            </div>
+            <div class="hint">MP4/WebM video or JPG/PNG image, under 8MB. Stored right in this browser.</div>
+          </div>
+          <div class="field">
+            <label>...or paste a hosted link</label>
+            <div class="field-row" style="grid-template-columns: 110px 1fr;">
+              <select id="banner-url-type">
+                <option value="video">Video URL</option>
+                <option value="image">Image URL</option>
+              </select>
+              <input id="banner-url" type="text" placeholder="https://..." />
+            </div>
+          </div>
+          <div class="modal-actions" style="justify-content:flex-start;">
+            <button type="button" class="btn-sm gold" id="banner-save">Save banner</button>
+            <button type="button" class="btn-sm" id="banner-remove">Remove banner</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="admin-head">
       <div>
         <h1>Inventory</h1>
@@ -467,6 +521,7 @@
 
   const STORAGE_KEY = "rbp_products_v4";
   const CART_KEY = "rbp_cart_v2";
+  const BANNER_KEY = "rbp_banner_v1";
 
   const CATEGORY_TILE = { Food:"#FFE8D6", Toys:"#FFF3C4", Grooming:"#D8E9FF", Accessories:"#FBD7EC", Health:"#D6F5E8", Beds:"#E6DBFF", Clothing:"#FFE0EC" };
   const PET_EMOJI = { Dog:"🐶", Cat:"🐱" };
@@ -604,7 +659,56 @@
     return true;
   }
 
-  // ---------- hero banner (changes per active tab) ----------
+  // ---------- homepage banner ----------
+  let siteBanner = null; // {type:'video'|'image', src:string}
+  let bannerDraft = null;
+
+  function loadBanner(){
+    try{ siteBanner = JSON.parse(localStorage.getItem(BANNER_KEY)) || null; }catch(e){ siteBanner = null; }
+  }
+  function saveBannerToStorage(){
+    try{
+      if(siteBanner){ localStorage.setItem(BANNER_KEY, JSON.stringify(siteBanner)); }
+      else{ localStorage.removeItem(BANNER_KEY); }
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  function renderSiteBanner(){
+    const el = document.getElementById("site-banner");
+    const promo = document.getElementById("promo-bar");
+    if(!siteBanner || !siteBanner.src){
+      el.classList.add("hide");
+      el.innerHTML = "";
+      promo.classList.remove("hide");
+      return;
+    }
+    promo.classList.add("hide");
+    el.classList.remove("hide");
+    if(siteBanner.type === "video"){
+      el.innerHTML = `<div class="site-banner-inner"><video src="${attrSafe(siteBanner.src)}" autoplay muted loop playsinline></video></div>`;
+    } else {
+      el.innerHTML = `<div class="site-banner-inner"><img src="${attrSafe(siteBanner.src)}" alt="Rainbow's Pets banner" /></div>`;
+    }
+  }
+
+  function renderBannerAdmin(){
+    const preview = document.getElementById("banner-preview");
+    const current = bannerDraft;
+    if(!current || !current.src){
+      preview.innerHTML = '<span class="banner-preview-empty">No banner set — the animated promo strip is showing instead</span>';
+      return;
+    }
+    if(current.type === "video"){
+      preview.innerHTML = `<video src="${attrSafe(current.src)}" autoplay muted loop playsinline></video>`;
+    } else {
+      preview.innerHTML = `<img src="${attrSafe(current.src)}" alt="" />`;
+    }
+  }
+
+
   function renderHero(){
     const key = activeCategory === "Health" ? "Health" : (HERO_CONTENT[activePet] ? activePet : "All");
     const content = HERO_CONTENT[key];
@@ -1148,7 +1252,7 @@
     document.getElementById("nav-shop").classList.toggle("active", view!=="admin");
   }
   function goToShop(){ showView("shop"); renderPetTabs(); renderHero(); renderShopBreadcrumb(); renderFilters(); renderGrid(); window.scrollTo({top:0, behavior:"instant"}); }
-  function showAdmin(){ showView("admin"); renderAdmin(); }
+  function showAdmin(){ showView("admin"); renderAdmin(); bannerDraft = siteBanner ? {...siteBanner} : null; document.getElementById("banner-url").value = (siteBanner && !siteBanner.src.startsWith("data:")) ? siteBanner.src : ""; document.getElementById("banner-url-type").value = siteBanner ? siteBanner.type : "video"; renderBannerAdmin(); }
 
   function renderAll(){ renderPetTabs(); renderPetTiles(); renderHero(); renderShopBreadcrumb(); renderFilters(); renderGrid(); renderCart(); renderAdmin(); }
 
@@ -1192,6 +1296,53 @@
   });
 
   document.getElementById("btn-export").addEventListener("click", exportCSV);
+
+  document.getElementById("banner-upload-trigger").addEventListener("click", ()=> document.getElementById("banner-file").click());
+  document.getElementById("banner-file").addEventListener("change", (e)=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    if(file.size > 8*1024*1024){ toast("Please use a file under 8MB"); e.target.value=""; return; }
+    const isVideo = file.type.startsWith("video/");
+    const reader = new FileReader();
+    reader.onload = (ev)=>{
+      bannerDraft = { type: isVideo ? "video" : "image", src: ev.target.result };
+      document.getElementById("banner-url").value = "";
+      renderBannerAdmin();
+      toast("Preview updated — click Save banner to publish");
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  });
+  document.getElementById("banner-url").addEventListener("input", (e)=>{
+    const val = e.target.value.trim();
+    const type = document.getElementById("banner-url-type").value;
+    bannerDraft = val ? { type, src: val } : null;
+    renderBannerAdmin();
+  });
+  document.getElementById("banner-url-type").addEventListener("change", (e)=>{
+    if(bannerDraft && bannerDraft.src && !bannerDraft.src.startsWith("data:")){
+      bannerDraft = { type: e.target.value, src: bannerDraft.src };
+      renderBannerAdmin();
+    }
+  });
+  document.getElementById("banner-save").addEventListener("click", ()=>{
+    siteBanner = bannerDraft;
+    const ok = saveBannerToStorage();
+    if(!ok){ toast("That file is too large to store in this browser — try a shorter clip or a hosted URL instead"); return; }
+    renderSiteBanner();
+    toast(siteBanner ? "Banner saved" : "Banner removed");
+  });
+  document.getElementById("banner-remove").addEventListener("click", ()=>{
+    bannerDraft = null;
+    siteBanner = null;
+    saveBannerToStorage();
+    document.getElementById("banner-url").value = "";
+    document.getElementById("banner-file").value = "";
+    renderBannerAdmin();
+    renderSiteBanner();
+    toast("Banner removed");
+  });
+
   document.getElementById("btn-import-trigger").addEventListener("click", ()=> document.getElementById("csv-input").click());
   document.getElementById("csv-input").addEventListener("change", (e)=>{ const file = e.target.files[0]; if(file) importCSV(file); e.target.value = ""; });
 
@@ -1208,8 +1359,10 @@
   // ---------- init ----------
   loadProducts();
   loadCart();
+  loadBanner();
   Object.keys(cart).forEach(id=>{ if(!byId(id)) delete cart[id]; });
   renderAll();
+  renderSiteBanner();
   initPromoBar();
 })();
 </script>
