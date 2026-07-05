@@ -43,8 +43,29 @@
   .wrap{ max-width:1180px; margin:0 auto; padding:0 24px; }
   .hide{ display:none !important; }
 
+  /* ---------- promo bar ---------- */
+  .promo-bar{
+    position:sticky; top:0; z-index:50; height:38px; overflow:hidden;
+    background: linear-gradient(90deg, #B9A6F0, #D8C7FF, #B9A6F0);
+    background-size:200% 100%;
+    animation: promoShift 8s ease infinite;
+    display:flex; align-items:center; justify-content:center;
+  }
+  @keyframes promoShift{ 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
+  .promo-track{ position:relative; width:100%; height:100%; }
+  .promo-msg{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:8px;
+    color:#2A2438; font-weight:700; font-size:0.82rem; letter-spacing:0.01em;
+    opacity:0; transform:translateY(10px); transition: opacity .5s ease, transform .5s ease; padding:0 16px; text-align:center;
+  }
+  .promo-msg.active{ opacity:1; transform:translateY(0); }
+  @media (prefers-reduced-motion: reduce){
+    .promo-bar{ animation:none; }
+    .promo-msg{ transition:none; }
+  }
+
   /* ---------- nav ---------- */
-  header.top{ position:sticky; top:0; z-index:40; background: rgba(255,255,255,0.88); backdrop-filter: blur(10px); border-bottom: 1px solid #00000012; }
+  header.top{ position:sticky; top:38px; z-index:40; background: rgba(255,255,255,0.88); backdrop-filter: blur(10px); border-bottom: 1px solid #00000012; }
   .navbar{ display:flex; align-items:center; gap:20px; padding:14px 24px; }
   .brand{ display:flex; align-items:center; gap:10px; font-family:'Fraunces',serif; font-weight:600; font-size:1.2rem; flex-shrink:0; }
   .brand .stamp{ width:32px; height:32px; border-radius:50%; background: var(--mustard); color:#1c2018; display:flex; align-items:center; justify-content:center; font-size:1.05rem; transform: rotate(-8deg); }
@@ -129,7 +150,7 @@
   .gallery-thumbs{ display:flex; gap:10px; }
   .gallery-thumbs button{ width:60px; height:60px; border-radius:10px; border:1.5px solid var(--card-line); background:var(--card); font-size:1.5rem; display:flex; align-items:center; justify-content:center; }
   .gallery-thumbs button.active{ border-color:var(--mustard); }
-  .pdp-info{ position:sticky; top:96px; }
+  .pdp-info{ position:sticky; top:134px; }
   .pdp-cat-link{ color:var(--sage); font-size:0.82rem; font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:0.05em; }
   .pdp-info h1{ font-size:1.85rem; margin:8px 0 10px; line-height:1.15; }
   .pdp-rating-row{ display:flex; align-items:center; gap:10px; margin-bottom:16px; font-size:0.92rem; }
@@ -270,6 +291,10 @@
 </head>
 <body>
 
+<div class="promo-bar" id="promo-bar">
+  <div class="promo-track" id="promo-track"></div>
+</div>
+
 <header class="top">
   <div class="navbar wrap">
     <div class="brand"><span class="stamp">🐾</span> Rainbow's Pets</div>
@@ -291,9 +316,9 @@
   <section class="hero" id="hero-section">
     <div class="wrap hero-inner">
       <div>
-        <div class="eyebrow">🐕 Est. for good boys &amp; girls</div>
-        <h1>Everything your <em>best friend</em><br/>actually deserves.</h1>
-        <p>Thoughtfully sourced food, toys, and gear — stocked in small batches, picked over by two very opinionated shop dogs.</p>
+        <div class="eyebrow" id="hero-eyebrow">🐾 Est. for good boys &amp; girls</div>
+        <h1 id="hero-heading">Everything your <em>best friend</em><br/>actually deserves.</h1>
+        <p id="hero-body">Thoughtfully sourced food, toys, and gear — stocked in small batches, picked over by two very opinionated shop dogs.</p>
       </div>
       <div class="hero-stats">
         <div class="hstat"><span class="n" id="stat-products">0</span><span class="l">Products</span></div>
@@ -450,6 +475,18 @@
     {icon:"↩", text:"30-day money-back guarantee"},
     {icon:"🔒", text:"Secure checkout, every order"}
   ];
+  const PROMO_MESSAGES = [
+    "🎉 New: the Dog Clothing collection just landed",
+    "🚚 Free shipping on orders over R899",
+    "💊 Medical Supplies — wellness essentials for dogs & cats",
+    "🐾 Small-batch treats restocked weekly"
+  ];
+  const HERO_CONTENT = {
+    All: { eyebrow:"🐾 Est. for good boys & girls", heading:'Everything your <em>best friend</em><br/>actually deserves.', body:"Thoughtfully sourced food, toys, and gear — stocked in small batches, picked over by two very opinionated shop dogs." },
+    Dog: { eyebrow:"🐕 Dog favorites", heading:'Everything your <em>dog</em><br/>actually deserves.', body:"Food, toys, clothing, and gear picked by two very opinionated shop dogs who test everything first." },
+    Cat: { eyebrow:"🐈 Cat favorites", heading:'Spoil your <em>cat</em><br/>without the guilt.', body:"Toys, grooming, and cozy beds our resident shop cats have personally approved (loudly)." },
+    Health: { eyebrow:"💊 Health & wellness", heading:'Everyday care for<br/><em>every stage</em> of life.', body:"Supplements, parasite protection, and daily wellness essentials for dogs and cats." }
+  };
   const REVIEW_AUTHORS = ["Jess M.", "Priya K.", "Sam O.", "Lindiwe N.", "Marcus T.", "Ayesha R.", "Dylan P.", "Naledi V.", "Chris B.", "Farah S."];
   const REVIEW_TEMPLATES = [
     "My {pet} genuinely gets excited when they see the {name} come out. Repeat buyer here.",
@@ -567,7 +604,32 @@
     return true;
   }
 
-  // ---------- pet tabs ----------
+  // ---------- hero banner (changes per active tab) ----------
+  function renderHero(){
+    const key = activeCategory === "Health" ? "Health" : (HERO_CONTENT[activePet] ? activePet : "All");
+    const content = HERO_CONTENT[key];
+    document.getElementById("hero-eyebrow").textContent = content.eyebrow;
+    document.getElementById("hero-heading").innerHTML = content.heading;
+    document.getElementById("hero-body").textContent = content.body;
+  }
+
+  // ---------- promo bar ----------
+  function initPromoBar(){
+    const track = document.getElementById("promo-track");
+    track.innerHTML = PROMO_MESSAGES.map((m,i)=> `<div class="promo-msg${i===0?' active':''}">${m}</div>`).join("");
+    const msgs = track.querySelectorAll(".promo-msg");
+    if(msgs.length <= 1) return;
+    const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if(reduceMotion) return;
+    let i = 0;
+    setInterval(()=>{
+      msgs[i].classList.remove("active");
+      i = (i+1) % msgs.length;
+      msgs[i].classList.add("active");
+    }, 3800);
+  }
+
+
   function renderPetTabs(){
     const pets = ["All", ...Array.from(new Set(products.map(p=>p.pet)))];
     const bar = document.getElementById("pet-tabs");
@@ -1085,10 +1147,10 @@
     document.getElementById("nav-admin").classList.toggle("active", view==="admin");
     document.getElementById("nav-shop").classList.toggle("active", view!=="admin");
   }
-  function goToShop(){ showView("shop"); renderPetTabs(); renderShopBreadcrumb(); renderFilters(); renderGrid(); window.scrollTo({top:0, behavior:"instant"}); }
+  function goToShop(){ showView("shop"); renderPetTabs(); renderHero(); renderShopBreadcrumb(); renderFilters(); renderGrid(); window.scrollTo({top:0, behavior:"instant"}); }
   function showAdmin(){ showView("admin"); renderAdmin(); }
 
-  function renderAll(){ renderPetTabs(); renderPetTiles(); renderShopBreadcrumb(); renderFilters(); renderGrid(); renderCart(); renderAdmin(); }
+  function renderAll(){ renderPetTabs(); renderPetTiles(); renderHero(); renderShopBreadcrumb(); renderFilters(); renderGrid(); renderCart(); renderAdmin(); }
 
   // ---------- wire up ----------
   document.getElementById("nav-shop").addEventListener("click", goToShop);
@@ -1148,6 +1210,7 @@
   loadCart();
   Object.keys(cart).forEach(id=>{ if(!byId(id)) delete cart[id]; });
   renderAll();
+  initPromoBar();
 })();
 </script>
 
