@@ -44,28 +44,29 @@
   .hide{ display:none !important; }
 
   /* ---------- promo bar ---------- */
+  :root{ --promo-h: 38px; }
   .promo-bar{
-    position:sticky; top:0; z-index:50; height:38px; overflow:hidden;
+    position:sticky; top:0; z-index:50; min-height:38px;
     background: linear-gradient(90deg, #B9A6F0, #D8C7FF, #B9A6F0);
     background-size:200% 100%;
     animation: promoShift 8s ease infinite;
     display:flex; align-items:center; justify-content:center;
+    padding:8px 20px;
   }
   @keyframes promoShift{ 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
-  .promo-track{ position:relative; width:100%; height:100%; }
   .promo-msg{
-    position:absolute; inset:0; display:flex; align-items:center; justify-content:center; gap:8px;
-    color:#2A2438; font-weight:700; font-size:0.82rem; letter-spacing:0.01em;
-    opacity:0; transform:translateY(10px); transition: opacity .5s ease, transform .5s ease; padding:0 16px; text-align:center;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    color:#2A2438; font-weight:700; font-size:0.82rem; letter-spacing:0.01em; line-height:1.35;
+    opacity:1; transition: opacity .35s ease; text-align:center; max-width:920px;
   }
-  .promo-msg.active{ opacity:1; transform:translateY(0); }
+  .promo-msg.fade{ opacity:0; }
   @media (prefers-reduced-motion: reduce){
     .promo-bar{ animation:none; }
     .promo-msg{ transition:none; }
   }
 
   /* ---------- nav ---------- */
-  header.top{ position:sticky; top:38px; z-index:40; background: rgba(255,255,255,0.88); backdrop-filter: blur(10px); border-bottom: 1px solid #00000012; }
+  header.top{ position:sticky; top:var(--promo-h); z-index:40; background: rgba(255,255,255,0.88); backdrop-filter: blur(10px); border-bottom: 1px solid #00000012; }
   .navbar{ display:flex; align-items:center; gap:20px; padding:14px 24px; }
   .brand{ display:flex; align-items:center; gap:10px; font-family:'Fraunces',serif; font-weight:600; font-size:1.2rem; flex-shrink:0; }
   .brand .stamp{ width:32px; height:32px; border-radius:50%; background: var(--mustard); color:#1c2018; display:flex; align-items:center; justify-content:center; font-size:1.05rem; transform: rotate(-8deg); }
@@ -150,7 +151,7 @@
   .gallery-thumbs{ display:flex; gap:10px; }
   .gallery-thumbs button{ width:60px; height:60px; border-radius:10px; border:1.5px solid var(--card-line); background:var(--card); font-size:1.5rem; display:flex; align-items:center; justify-content:center; }
   .gallery-thumbs button.active{ border-color:var(--mustard); }
-  .pdp-info{ position:sticky; top:134px; }
+  .pdp-info{ position:sticky; top:calc(var(--promo-h) + 96px); }
   .pdp-cat-link{ color:var(--sage); font-size:0.82rem; font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:0.05em; }
   .pdp-info h1{ font-size:1.85rem; margin:8px 0 10px; line-height:1.15; }
   .pdp-rating-row{ display:flex; align-items:center; gap:10px; margin-bottom:16px; font-size:0.92rem; }
@@ -305,7 +306,7 @@
 <body>
 
 <div class="promo-bar" id="promo-bar">
-  <div class="promo-track" id="promo-track"></div>
+  <div class="promo-msg" id="promo-msg"></div>
 </div>
 
 <header class="top">
@@ -703,6 +704,7 @@
       el.classList.add("hide");
       el.innerHTML = "";
       promo.classList.remove("hide");
+      requestAnimationFrame(syncPromoHeight);
       return;
     }
     promo.classList.add("hide");
@@ -712,6 +714,7 @@
     } else {
       el.innerHTML = `<div class="site-banner-inner"><img src="${attrSafe(siteBanner.src)}" alt="Rainbow's Pets banner" /></div>`;
     }
+    requestAnimationFrame(syncPromoHeight);
   }
 
   function renderBannerAdmin(){
@@ -750,21 +753,31 @@
     promoMessages = list.length ? list : DEFAULT_PROMO_MESSAGES.slice();
     localStorage.setItem(PROMO_KEY, JSON.stringify(promoMessages));
   }
+  function syncPromoHeight(){
+    const bar = document.getElementById("promo-bar");
+    const h = bar.offsetHeight || 0;
+    document.documentElement.style.setProperty("--promo-h", h + "px");
+  }
   function initPromoBar(){
-    const track = document.getElementById("promo-track");
     if(promoInterval){ clearInterval(promoInterval); promoInterval = null; }
-    track.innerHTML = promoMessages.map((m,i)=> `<div class="promo-msg${i===0?' active':''}">${escapeHtml(m)}</div>`).join("");
-    const msgs = track.querySelectorAll(".promo-msg");
-    if(msgs.length <= 1) return;
+    const msgEl = document.getElementById("promo-msg");
+    let i = 0;
+    msgEl.textContent = promoMessages[0] || "";
+    requestAnimationFrame(syncPromoHeight);
+    if(promoMessages.length <= 1) return;
     const reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if(reduceMotion) return;
-    let i = 0;
     promoInterval = setInterval(()=>{
-      msgs[i].classList.remove("active");
-      i = (i+1) % msgs.length;
-      msgs[i].classList.add("active");
+      msgEl.classList.add("fade");
+      setTimeout(()=>{
+        i = (i+1) % promoMessages.length;
+        msgEl.textContent = promoMessages[i];
+        msgEl.classList.remove("fade");
+        syncPromoHeight();
+      }, 350);
     }, 3800);
   }
+  window.addEventListener("resize", ()=>{ clearTimeout(window._promoResizeT); window._promoResizeT = setTimeout(syncPromoHeight, 150); });
 
 
   function renderPetTabs(){
