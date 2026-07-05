@@ -1249,6 +1249,7 @@
       const rows = parseCSV(String(e.target.result));
       if(rows.length < 2){ toast("CSV looks empty"); return; }
       const headers = rows[0].map(h=>h.trim().toLowerCase());
+      const has = (h)=> headers.includes(h);
       let added = 0, updated = 0;
       for(let i=1;i<rows.length;i++){
         const r = rows[i];
@@ -1257,20 +1258,21 @@
         headers.forEach((h,idx)=> rec[h] = r[idx] !== undefined ? r[idx].trim() : "");
         if(!rec.name || !rec.sku) continue;
         const existingIdx = products.findIndex(p => p.sku.toLowerCase() === rec.sku.toLowerCase());
+        const existing = existingIdx >= 0 ? products[existingIdx] : null;
         const data = {
-          id: existingIdx >= 0 ? products[existingIdx].id : uid(),
+          id: existing ? existing.id : uid(),
           name: rec.name, sku: rec.sku,
-          pet: rec.pet || "Dog",
-          category: rec.category || "Accessories",
-          price: parseFloat(rec.price) || 0,
-          stock: parseInt(rec.stock) || 0,
-          icon: rec.icon || "🐾",
-          image: rec.image || null,
-          desc: rec.desc || rec.description || "",
-          specs: rec.specs ? rec.specs.split("|").map(s=>s.trim()).filter(Boolean) : [],
-          _isNew: existingIdx < 0
+          pet: rec.pet || (existing ? existing.pet : "Dog"),
+          category: rec.category || (existing ? existing.category : "Accessories"),
+          price: has("price") ? (parseFloat(rec.price) || 0) : (existing ? existing.price : 0),
+          stock: has("stock") ? (parseInt(rec.stock) || 0) : (existing ? existing.stock : 0),
+          icon: has("icon") ? (rec.icon || "🐾") : (existing ? existing.icon : "🐾"),
+          image: has("image") ? (rec.image || null) : (existing ? existing.image : null),
+          desc: (has("desc") || has("description")) ? (rec.desc || rec.description || "") : (existing ? existing.desc : ""),
+          specs: has("specs") ? rec.specs.split("|").map(s=>s.trim()).filter(Boolean) : (existing ? existing.specs : []),
+          _isNew: existing ? existing._isNew : true
         };
-        if(existingIdx >= 0){ products[existingIdx] = data; updated++; } else { products.push(data); added++; }
+        if(existing){ products[existingIdx] = data; updated++; } else { products.push(data); added++; }
       }
       saveProducts(); renderAll();
       toast(`Imported: ${added} added, ${updated} updated`);
