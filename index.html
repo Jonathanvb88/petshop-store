@@ -215,6 +215,12 @@
   .remove-link{ background:none; border:none; color:var(--rust-dim); font-size:0.76rem; text-decoration:underline; padding:0; margin-left:auto; }
   .drawer-foot{ padding:18px 22px 24px; border-top:1px solid #00000014; }
   .ship-note{ font-size:0.78rem; color:var(--sage); margin-bottom:12px; text-align:center; }
+  .promo-row{ display:flex; gap:8px; margin-bottom:10px; }
+  .promo-row input{ flex:1; background:#0000000c; border:1px solid #00000026; border-radius:8px; padding:9px 12px; color:var(--cream); font-family:inherit; font-size:0.85rem; }
+  #promo-applied-note{ font-size:0.78rem; color:#15803D; margin-bottom:10px; min-height:1px; }
+  .checkout-summary{ background:#0000000a; border-radius:10px; padding:14px 16px; margin:8px 0 18px; font-size:0.88rem; }
+  .checkout-summary .crow{ display:flex; justify-content:space-between; padding:4px 0; color:var(--cream-dim); }
+  .checkout-summary .crow.total{ color:var(--cream); font-weight:700; border-top:1px solid #00000012; margin-top:6px; padding-top:8px; }
   .subtotal-row{ display:flex; justify-content:space-between; margin-bottom:14px; font-size:1.05rem; }
   .checkout-btn{ width:100%; background:var(--mustard); color:#1c2018; border:none; padding:14px; border-radius:10px; font-weight:700; font-size:1rem; }
   .checkout-btn:hover{ background:var(--mustard-dim); }
@@ -327,7 +333,48 @@
   .toast{ background:var(--ink); color:#FAF9FF; padding:12px 20px; border-radius:999px; font-weight:600; font-size:0.88rem; box-shadow:0 8px 24px #00000040; opacity:0; transform:translateY(10px); transition:all .25s ease; }
   .toast.show{ opacity:1; transform:translateY(0); }
 
-  footer.site{ border-top:1px solid #00000014; padding:28px 24px; text-align:center; color:var(--sage); font-size:0.82rem; }
+  footer.site{ border-top:1px solid #00000014; padding:32px 24px; text-align:center; color:var(--sage); font-size:0.82rem; }
+  .footer-links{ display:flex; gap:20px; justify-content:center; flex-wrap:wrap; margin-bottom:16px; }
+  .footer-links button, #footer-contact{ background:none; border:none; color:var(--cream-dim); font-weight:600; font-size:0.84rem; padding:0; }
+  .footer-links button:hover, #footer-contact:hover{ color:var(--mustard-dim); text-decoration:underline; }
+  .footer-copy{ color:var(--sage); }
+
+  .wishlist-btn{ background:transparent; color:var(--rust-dim); border:1.5px solid var(--card-line); }
+  .wishlist-btn .cart-count{ background:var(--rust-dim); color:#fff; }
+  .wishlist-btn:hover{ border-color:var(--rust-dim); }
+
+  .simple-page{ padding:44px 24px 80px; max-width:760px; }
+  .simple-page h1{ font-size:1.9rem; margin:0 0 10px; }
+  .simple-page .sub{ color:var(--sage); margin:0 0 28px; line-height:1.55; }
+  .policy-page h2{ font-size:1.2rem; margin:28px 0 10px; }
+  .policy-page p, .policy-page li{ color:var(--cream-dim); line-height:1.65; font-size:0.94rem; }
+
+  .order-lookup{ display:flex; gap:10px; margin-bottom:30px; flex-wrap:wrap; }
+  .order-lookup input{ flex:1; min-width:220px; background:#0000000c; border:1px solid #00000026; border-radius:9px; padding:11px 14px; color:var(--cream); font-family:inherit; font-size:0.92rem; }
+  .order-card{ background:var(--card); border:1px solid var(--card-line); border-radius:12px; padding:18px 20px; margin-bottom:14px; }
+  .order-card .ohead{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; flex-wrap:wrap; gap:6px; }
+  .order-card .oid{ font-family:'JetBrains Mono',monospace; font-weight:700; }
+  .order-card .odate{ color:var(--sage); font-size:0.8rem; }
+  .order-card .oitem{ display:flex; justify-content:space-between; font-size:0.86rem; color:var(--cream-dim); padding:4px 0; }
+  .order-card .ototal{ display:flex; justify-content:space-between; font-weight:700; margin-top:10px; padding-top:10px; border-top:1px solid #00000010; }
+
+  .contact-row{ padding:10px 0; font-size:0.92rem; border-bottom:1px solid #00000010; }
+  .contact-row a{ color:var(--mustard-dim); text-decoration:underline; }
+
+  .wish-heart{ position:absolute; top:10px; right:10px; z-index:2; background:#ffffffcc; border:none; width:30px; height:30px; border-radius:50%; font-size:1rem; display:flex; align-items:center; justify-content:center; color:var(--rust-dim); }
+  .wish-heart.active{ background:var(--rust-dim); color:#fff; }
+  .pdp-wish-btn{ width:100%; background:transparent; border:1.5px solid var(--card-line); color:var(--cream); padding:12px; border-radius:10px; font-weight:700; margin-bottom:14px; }
+  .pdp-wish-btn.active{ border-color:var(--rust-dim); color:var(--rust-dim); }
+
+  .notify-form{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .notify-block{ margin-bottom:16px; }
+  .notify-form input{ flex:1; min-width:180px; background:#0000000c; border:1px solid #00000026; border-radius:8px; padding:9px 12px; color:var(--cream); font-family:inherit; font-size:0.88rem; }
+
+  .review-form{ background:var(--card); border:1px solid var(--card-line); border-radius:12px; padding:18px; margin-bottom:22px; }
+  .review-form .star-input{ display:flex; gap:4px; margin-bottom:12px; font-size:1.3rem; cursor:pointer; }
+  .review-form .star-input span{ color:var(--card-line); }
+  .review-form .star-input span.filled{ color:var(--star); }
+
 
   @media (max-width:900px){
     .pdp-grid{ grid-template-columns:1fr; }
@@ -367,6 +414,7 @@
       <button id="nav-shop" class="active">Shop</button>
       <button id="nav-admin">Admin</button>
     </nav>
+    <button class="cart-btn wishlist-btn" id="open-wishlist">♡ <span class="cart-count" id="wishlist-count">0</span></button>
     <button class="cart-btn" id="open-cart">Cart <span class="cart-count" id="cart-count">0</span></button>
   </div>
   <div class="pet-tabs wrap" id="pet-tabs"></div>
@@ -559,7 +607,55 @@
   </div>
 </main>
 
-<footer class="site wrap">Rainbow's Pets — a demo storefront. Data lives in this browser only.</footer>
+<!-- ============ MY ORDERS VIEW ============ -->
+<main id="orders-view" class="hide">
+  <div class="simple-page wrap">
+    <h1>My orders</h1>
+    <p class="sub">Look up an order using the email address you checked out with, or an order number.</p>
+    <div class="order-lookup">
+      <input type="text" id="order-lookup-input" placeholder="Email or order number..." />
+      <button class="btn-primary" id="order-lookup-btn">Find orders</button>
+    </div>
+    <div id="order-lookup-results"></div>
+  </div>
+</main>
+
+<!-- ============ WISHLIST VIEW ============ -->
+<main id="wishlist-view" class="hide">
+  <div class="simple-page wrap">
+    <h1>Your wishlist</h1>
+    <p class="sub">Saved items live in this browser. Tap the heart on any product to add or remove it.</p>
+    <div class="grid" id="wishlist-grid" style="padding:0;"></div>
+  </div>
+</main>
+
+<!-- ============ POLICY / INFO VIEW ============ -->
+<main id="policy-view" class="hide">
+  <div class="simple-page wrap policy-page" id="policy-content"></div>
+</main>
+
+<footer class="site wrap">
+  <div class="footer-links">
+    <button data-footer-nav="orders">My Orders</button>
+    <button data-footer-nav="wishlist">Wishlist</button>
+    <button data-footer-nav="policy/shipping">Shipping &amp; Returns</button>
+    <button data-footer-nav="policy/privacy">Privacy Policy</button>
+    <button id="footer-contact">Contact Us</button>
+  </div>
+  <div class="footer-copy">Rainbow's Pets — a demo storefront. Data lives in this browser only.</div>
+</footer>
+
+<!-- ============ CONTACT MODAL ============ -->
+<div class="modal-scrim" id="contact-scrim">
+  <div class="modal">
+    <h2>Contact us</h2>
+    <p class="sub">We usually reply within one business day.</p>
+    <div class="contact-row">📧 <a href="mailto:hello@rainbowspets.example">hello@rainbowspets.example</a></div>
+    <div class="contact-row">📞 <a href="tel:+27100000000">+27 10 000 0000</a></div>
+    <div class="contact-row">📍 Cape Town, South Africa</div>
+    <div class="modal-actions"><button class="btn-primary" id="contact-close">Close</button></div>
+  </div>
+</div>
 
 <!-- ============ CART DRAWER ============ -->
 <div class="scrim" id="cart-scrim"></div>
@@ -568,17 +664,48 @@
   <div class="cart-items" id="cart-items"></div>
   <div class="drawer-foot">
     <div class="ship-note" id="ship-note"></div>
-    <div class="subtotal-row"><span>Subtotal</span><strong class="mono" id="cart-subtotal">R0.00</strong></div>
+    <div class="promo-row" id="promo-row">
+      <input type="text" id="promo-code-input" placeholder="Promo code" />
+      <button class="btn-sm" id="promo-code-apply">Apply</button>
+    </div>
+    <div id="promo-applied-note"></div>
+    <div class="subtotal-row" id="discount-row" style="display:none; font-size:0.9rem; color:var(--rust-dim);"><span>Discount</span><strong class="mono" id="cart-discount">-R0.00</strong></div>
+    <div class="subtotal-row"><span>Total</span><strong class="mono" id="cart-subtotal">R0.00</strong></div>
     <button class="checkout-btn" id="checkout-btn">Checkout</button>
   </div>
 </aside>
+
+<!-- ============ CHECKOUT DETAILS MODAL ============ -->
+<div class="modal-scrim" id="checkout-form-scrim">
+  <div class="modal wide">
+    <h2>Delivery details</h2>
+    <p class="sub">This is a demo checkout — no payment is actually collected.</p>
+    <form id="checkout-form">
+      <div class="field-row">
+        <div class="field"><label>Full name *</label><input id="co-name" required /></div>
+        <div class="field"><label>Email *</label><input id="co-email" type="email" required /></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Phone *</label><input id="co-phone" required /></div>
+        <div class="field"><label>Postal code *</label><input id="co-postal" required /></div>
+      </div>
+      <div class="field"><label>Delivery address *</label><input id="co-address" required /></div>
+      <div class="field"><label>City *</label><input id="co-city" required /></div>
+      <div class="checkout-summary" id="checkout-summary"></div>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="co-cancel">Back to cart</button>
+        <button type="submit" class="btn-primary" id="co-place">Place order</button>
+      </div>
+    </form>
+  </div>
+</div>
 
 <!-- ============ CHECKOUT CONFIRM MODAL ============ -->
 <div class="modal-scrim" id="confirm-scrim">
   <div class="modal">
     <div class="check-circle">✓</div>
     <h2>Order placed</h2>
-    <p class="sub">Thanks! This is a demo checkout, so no payment was actually taken.</p>
+    <p class="sub">Thanks! This is a demo checkout, so no payment was actually taken. A copy of this order is saved under "My Orders" using the email you provided.</p>
     <div class="order-id mono" id="order-id-display"></div>
     <div class="modal-actions"><button class="btn-primary" id="confirm-close">Keep shopping</button></div>
   </div>
@@ -649,6 +776,9 @@
   const BANNER_KEY = "rbp_banner_v1";
   const PROMO_KEY = "rbp_promo_v1";
   const ORDERS_KEY = "rbp_orders_v1";
+  const WISHLIST_KEY = "rbp_wishlist_v1";
+  const CUSTOMER_REVIEWS_KEY = "rbp_customer_reviews_v1";
+  const NOTIFY_KEY = "rbp_notify_v1";
 
   const CATEGORY_TILE = { Food:"#FFE8D6", Toys:"#FFF3C4", Grooming:"#D8E9FF", Accessories:"#FBD7EC", Health:"#D6F5E8", Beds:"#E6DBFF", Clothing:"#FFE0EC" };
   const PET_EMOJI = { Dog:"🐶", Cat:"🐱" };
@@ -718,18 +848,23 @@
   // ---------- deterministic rating/reviews (so seed data stays compact) ----------
   function hashStr(s){ let h=0; for(let i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) >>> 0; } return h; }
   function getRating(p){
-    if(p.rating !== undefined && p.rating !== null) return p.rating;
-    const h = hashStr(p.id + p.sku);
-    return +(4.2 + (h % 8) / 10).toFixed(1);
+    const baseline = p.rating !== undefined && p.rating !== null ? p.rating : +(4.2 + (hashStr(p.id + p.sku) % 8) / 10).toFixed(1);
+    const custom = getCustomerReviews(p.id);
+    if(custom.length === 0) return baseline;
+    const baselineCount = getBaselineReviewCount(p);
+    const totalStars = baseline * baselineCount + custom.reduce((s,r)=>s+r.rating, 0);
+    return +(totalStars / (baselineCount + custom.length)).toFixed(1);
   }
-  function getReviewCount(p){
+  function getBaselineReviewCount(p){
     if(p.reviewCount !== undefined && p.reviewCount !== null) return p.reviewCount;
     if(p._isNew) return 0;
-    const h = hashStr(p.sku + p.id);
-    return 18 + (h % 460);
+    return 18 + (hashStr(p.sku + p.id) % 460);
+  }
+  function getReviewCount(p){
+    return getBaselineReviewCount(p) + getCustomerReviews(p.id).length;
   }
   function getReviews(p){
-    if(getReviewCount(p) === 0) return [];
+    if(getBaselineReviewCount(p) === 0) return [];
     const h = hashStr(p.id);
     const petWord = (p.pet||"pet").toLowerCase();
     const r1 = REVIEW_TEMPLATES[h % REVIEW_TEMPLATES.length].replace(/{pet}/g, petWord).replace(/{name}/g, p.name);
@@ -898,13 +1033,13 @@
       const isActive = pt===activePet && activeCategory !== "Health";
       b.className = "pet-tab" + (isActive ? " active" : "");
       b.innerHTML = (pt==="All" ? "🐾" : PET_EMOJI[pt]||"🐾") + " " + pt;
-      b.addEventListener("click", ()=>{ activePet = pt; activeCategory="All"; goToShop(); });
+      b.addEventListener("click", ()=>{ activePet = pt; activeCategory="All"; goToShop(false); });
       bar.appendChild(b);
     });
     const medBtn = document.createElement("button");
     medBtn.className = "pet-tab" + (activeCategory==="Health" ? " active" : "");
     medBtn.innerHTML = "💊 Medical Supplies";
-    medBtn.addEventListener("click", ()=>{ activePet = "All"; activeCategory = "Health"; goToShop(); });
+    medBtn.addEventListener("click", ()=>{ activePet = "All"; activeCategory = "Health"; goToShop(false); });
     bar.appendChild(medBtn);
   }
 
@@ -920,19 +1055,19 @@
       const tile = document.createElement("button");
       tile.className = "pet-tile";
       tile.innerHTML = `<span class="emoji">${PET_EMOJI[pt]||"🐾"}</span><span class="name">${pt}</span><br/><span class="count">${count} products</span>`;
-      tile.addEventListener("click", ()=>{ activePet = pt; activeCategory="All"; goToShop(); });
+      tile.addEventListener("click", ()=>{ activePet = pt; activeCategory="All"; goToShop(false); });
       wrap.appendChild(tile);
     });
     const medCount = products.filter(p=>p.category==="Health").length;
     const medTile = document.createElement("button");
     medTile.className = "pet-tile";
     medTile.innerHTML = `<span class="emoji">💊</span><span class="name">Medical Supplies</span><br/><span class="count">${medCount} products</span>`;
-    medTile.addEventListener("click", ()=>{ activePet="All"; activeCategory="Health"; goToShop(); });
+    medTile.addEventListener("click", ()=>{ activePet="All"; activeCategory="Health"; goToShop(false); });
     wrap.appendChild(medTile);
     const allTile = document.createElement("button");
     allTile.className = "pet-tile";
     allTile.innerHTML = `<span class="emoji">🐾</span><span class="name">Shop All</span><br/><span class="count">${products.length} products</span>`;
-    allTile.addEventListener("click", ()=>{ activePet="All"; activeCategory="All"; goToShop(); });
+    allTile.addEventListener("click", ()=>{ activePet="All"; activeCategory="All"; goToShop(false); });
     wrap.appendChild(allTile);
   }
 
@@ -979,6 +1114,7 @@
       const out = p.stock <= 0;
       const rc = getReviewCount(p);
       card.innerHTML = `
+        <button class="wish-heart ${isWished(p.id)?'active':''}" data-wish="${p.id}" title="${isWished(p.id)?'Remove from':'Add to'} wishlist">${isWished(p.id)?'♥':'♡'}</button>
         <div class="punch"></div>
         <div class="tile" style="background:${tileColor(p.category)}; overflow:hidden;">${mediaInner(p)}</div>
         <div class="cat">${p.category} · ${p.pet}</div>
@@ -998,17 +1134,19 @@
     });
     grid.querySelectorAll("[data-add]").forEach(b=> b.addEventListener("click", ()=> addToCart(b.dataset.add, 1)));
     grid.querySelectorAll("[data-view]").forEach(b=> b.addEventListener("click", ()=> openProductPage(b.dataset.view)));
+    grid.querySelectorAll("[data-wish]").forEach(b=> b.addEventListener("click", (e)=>{ e.stopPropagation(); toggleWish(b.dataset.wish); }));
     document.getElementById("stat-products").textContent = products.length;
     document.getElementById("stat-categories").textContent = new Set(products.map(p=>p.category)).size;
   }
 
   // ---------- product detail page ----------
-  function openProductPage(id){
+  function openProductPage(id, pushHash){
     currentProductId = id;
     pdpQty = 1;
     activeTab = "desc";
     currentView = "pdp";
     showView("pdp");
+    if(pushHash !== false) setHash("#/product/" + id);
     renderPDP();
     window.scrollTo({top:0, behavior:"instant"});
   }
@@ -1067,6 +1205,15 @@
             </div>
           </div>
           <button class="pdp-add-btn" id="pdp-add-btn" ${out?"disabled":""}>${out ? "Out of stock" : "Add to cart"}</button>
+          <button class="pdp-wish-btn ${isWished(p.id)?'active':''}" id="pdp-wish-btn">${isWished(p.id)?'♥ Saved to wishlist':'♡ Add to wishlist'}</button>
+          ${out ? `
+          <div class="notify-block">
+            <p class="hint" style="margin:0 0 8px;">Out of stock — leave your email and we'll let you know when it's back (demo only, no email is actually sent).</p>
+            <form class="notify-form" id="notify-form">
+              <input type="email" id="notify-email" placeholder="you@example.com" required />
+              <button type="submit" class="btn-sm gold">Notify me</button>
+            </form>
+          </div>` : ""}
           <div class="trust-badges">
             ${TRUST_BADGES.map(b=>`<div class="item"><span>${b.icon}</span><span>${b.text}</span></div>`).join("")}
           </div>
@@ -1100,6 +1247,15 @@
     document.getElementById("pdp-qty-inc").addEventListener("click", ()=>{ if(pdpQty < p.stock) { pdpQty++; document.getElementById("pdp-qty-val").textContent = pdpQty; } });
     document.getElementById("pdp-qty-dec").addEventListener("click", ()=>{ if(pdpQty > 1) { pdpQty--; document.getElementById("pdp-qty-val").textContent = pdpQty; } });
     document.getElementById("pdp-add-btn").addEventListener("click", ()=>{ addToCart(p.id, pdpQty); });
+    document.getElementById("pdp-wish-btn").addEventListener("click", ()=> toggleWish(p.id));
+    const notifyForm = document.getElementById("notify-form");
+    if(notifyForm){
+      notifyForm.addEventListener("submit", (e)=>{
+        e.preventDefault();
+        saveNotifyRequest(p.id, document.getElementById("notify-email").value.trim());
+        notifyForm.innerHTML = `<span style="color:#15803D; font-size:0.86rem;">✓ We'll email you when it's back in stock.</span>`;
+      });
+    }
 
     renderRelated(p);
   }
@@ -1111,19 +1267,39 @@
     } else if(activeTab === "specs"){
       panel.innerHTML = `<ul class="spec-list">${specs.map(s=>`<li>${escapeHtml(s)}</li>`).join("")}</ul>`;
     } else {
-      if(rc === 0){
-        panel.innerHTML = `<p class="pdp-desc">No reviews yet for this product.</p>`;
+      const custom = getCustomerReviews(p.id);
+      const allReviews = [...custom, ...reviews];
+      const totalCount = rc;
+      const reviewForm = `
+        <div class="review-form">
+          <h4 style="margin:0 0 12px;">Write a review</h4>
+          <form id="review-form">
+            <div class="star-input" id="review-star-input">
+              ${[1,2,3,4,5].map(n=>`<span data-star="${n}">★</span>`).join("")}
+            </div>
+            <input type="hidden" id="review-rating-value" value="5" />
+            <div class="field-row">
+              <input type="text" id="review-author" placeholder="Your name" required style="background:#0000000c;border:1px solid #00000026;border-radius:8px;padding:9px 12px;color:var(--cream);font-family:inherit;" />
+            </div>
+            <textarea id="review-text" placeholder="What did you think?" required style="width:100%;margin-top:10px;background:#0000000c;border:1px solid #00000026;border-radius:8px;padding:9px 12px;color:var(--cream);font-family:inherit;min-height:60px;"></textarea>
+            <button type="submit" class="btn-sm gold" style="margin-top:10px;">Submit review</button>
+          </form>
+        </div>
+      `;
+      if(totalCount === 0){
+        panel.innerHTML = `<p class="pdp-desc">No reviews yet for this product.</p>` + reviewForm;
       } else {
         panel.innerHTML = `
           <div class="review-summary">
             <div class="big-score">${rating.toFixed(1)}</div>
-            <div><span class="stars">${starString(rating)}</span><br/><span class="review-count">${rc} reviews</span></div>
+            <div><span class="stars">${starString(rating)}</span><br/><span class="review-count">${totalCount} reviews</span></div>
           </div>
-          ${reviews.map(r=>`
+          ${reviewForm}
+          ${allReviews.map(r=>`
             <div class="review-card">
               <div class="rhead">
                 <span class="author">${escapeHtml(r.author)}</span>
-                <span class="verified-badge">Verified buyer</span>
+                <span class="verified-badge">${r.verified===false ? "New review" : "Verified buyer"}</span>
                 <span class="date">${r.date}</span>
               </div>
               <div class="stars" style="margin-bottom:6px;">${starString(r.rating)}</div>
@@ -1132,6 +1308,22 @@
           `).join("")}
         `;
       }
+      let selectedStars = 5;
+      const starInput = document.getElementById("review-star-input");
+      function paintStars(){
+        starInput.querySelectorAll("span").forEach(s=> s.classList.toggle("filled", +s.dataset.star <= selectedStars));
+      }
+      paintStars();
+      starInput.querySelectorAll("span").forEach(s=> s.addEventListener("click", ()=>{ selectedStars = +s.dataset.star; document.getElementById("review-rating-value").value = selectedStars; paintStars(); }));
+      document.getElementById("review-form").addEventListener("submit", (e)=>{
+        e.preventDefault();
+        const author = document.getElementById("review-author").value.trim();
+        const text = document.getElementById("review-text").value.trim();
+        if(!author || !text) return;
+        addCustomerReview(p.id, {author, rating: selectedStars, text, date: "Just now", verified:false});
+        toast("Thanks for your review!");
+        renderTabPanel(p, specs, reviews, rating, rc);
+      });
     }
   }
 
@@ -1179,15 +1371,38 @@
   }
   function removeFromCart(id){ delete cart[id]; saveCart(); renderCart(); }
 
+  const PROMO_CODES = {
+    "WELCOME10": {type:"percent", value:10, label:"10% off"},
+    "FREESHIP": {type:"freeship", label:"Free shipping"},
+    "SAVE50": {type:"flat", value:50, label:"R50 off"}
+  };
+  let appliedPromo = null;
+
+  function computeCartTotals(){
+    const ids = Object.keys(cart).filter(id => byId(id));
+    let subtotal = 0, count = 0;
+    ids.forEach(id=>{ const p = byId(id); subtotal += p.price * cart[id]; count += cart[id]; });
+    let discount = 0;
+    let freeShipping = false;
+    if(appliedPromo){
+      const promo = PROMO_CODES[appliedPromo];
+      if(promo){
+        if(promo.type === "percent") discount = subtotal * (promo.value/100);
+        else if(promo.type === "flat") discount = Math.min(promo.value, subtotal);
+        else if(promo.type === "freeship") freeShipping = true;
+      }
+    }
+    const total = Math.max(0, subtotal - discount);
+    return {ids, subtotal, count, discount, freeShipping, total};
+  }
+
   function renderCart(){
     const wrap = document.getElementById("cart-items");
-    const ids = Object.keys(cart).filter(id => byId(id));
-    let total = 0, count = 0;
+    const {ids, subtotal, count, discount, freeShipping, total} = computeCartTotals();
     wrap.innerHTML = "";
     if(ids.length === 0){ wrap.innerHTML = '<p class="empty-note" style="padding:30px 0;">Your cart is empty.</p>'; }
     ids.forEach(id=>{
       const p = byId(id); const qty = cart[id];
-      total += p.price * qty; count += qty;
       const row = document.createElement("div");
       row.className = "cart-line";
       row.innerHTML = `
@@ -1209,30 +1424,72 @@
     document.getElementById("cart-subtotal").textContent = money(total);
     document.getElementById("cart-count").textContent = count;
     document.getElementById("checkout-btn").disabled = ids.length === 0;
+    document.getElementById("discount-row").style.display = discount > 0 ? "flex" : "none";
+    document.getElementById("cart-discount").textContent = "-" + money(discount);
     const remaining = Math.max(0, 899 - total);
-    document.getElementById("ship-note").textContent = ids.length === 0 ? "" : (remaining > 0 ? `Add ${money(remaining)} more for free shipping` : "🚚 You've unlocked free shipping!");
+    document.getElementById("ship-note").textContent = ids.length === 0 ? "" : (freeShipping ? "🚚 Free shipping applied!" : (remaining > 0 ? `Add ${money(remaining)} more for free shipping` : "🚚 You've unlocked free shipping!"));
+    const noteEl = document.getElementById("promo-applied-note");
+    noteEl.textContent = appliedPromo ? `✓ Code ${appliedPromo} applied (${PROMO_CODES[appliedPromo].label})` : "";
+    document.getElementById("promo-row").style.display = appliedPromo ? "none" : "flex";
+  }
+
+  function applyPromoCode(){
+    const input = document.getElementById("promo-code-input");
+    const code = input.value.trim().toUpperCase();
+    if(!code) return;
+    if(PROMO_CODES[code]){
+      appliedPromo = code;
+      input.value = "";
+      renderCart();
+      toast("Promo code applied!");
+    } else {
+      toast("That code isn't valid");
+    }
   }
 
   function openCart(){ document.getElementById("cart-drawer").classList.add("open"); document.getElementById("cart-scrim").classList.add("open"); }
   function closeCart(){ document.getElementById("cart-drawer").classList.remove("open"); document.getElementById("cart-scrim").classList.remove("open"); }
 
-  function checkout(){
-    const ids = Object.keys(cart).filter(id=>byId(id));
+  function openCheckoutForm(){
+    const {ids, subtotal, discount, freeShipping, total} = computeCartTotals();
     if(ids.length === 0) return;
+    const summary = document.getElementById("checkout-summary");
+    summary.innerHTML = `
+      <div class="crow"><span>Subtotal</span><span class="mono">${money(subtotal)}</span></div>
+      ${discount>0 ? `<div class="crow"><span>Discount${appliedPromo?` (${appliedPromo})`:""}</span><span class="mono">-${money(discount)}</span></div>` : ""}
+      <div class="crow"><span>Shipping</span><span class="mono">${freeShipping || total >= 899 ? "Free" : "Calculated at delivery"}</span></div>
+      <div class="crow total"><span>Total</span><span class="mono">${money(total)}</span></div>
+    `;
+    closeCart();
+    document.getElementById("checkout-form-scrim").classList.add("open");
+  }
+  function closeCheckoutForm(){ document.getElementById("checkout-form-scrim").classList.remove("open"); }
+
+  function finalizeCheckout(e){
+    e.preventDefault();
+    const {ids, total} = computeCartTotals();
+    if(ids.length === 0) return;
+    const customer = {
+      name: document.getElementById("co-name").value.trim(),
+      email: document.getElementById("co-email").value.trim(),
+      phone: document.getElementById("co-phone").value.trim(),
+      address: document.getElementById("co-address").value.trim(),
+      city: document.getElementById("co-city").value.trim(),
+      postal: document.getElementById("co-postal").value.trim()
+    };
     const items = [];
-    let total = 0;
     ids.forEach(id=>{
       const p = byId(id);
       const qty = cart[id];
       items.push({pid:id, name:p.name, qty, price:p.price});
-      total += p.price * qty;
       p.stock = Math.max(0, p.stock - qty);
     });
     saveProducts();
-    recordOrder({date: new Date().toISOString(), items, total});
-    cart = {}; saveCart(); renderCart(); renderGrid(); renderAdmin();
-    closeCart();
     const orderId = "RBP-" + Date.now().toString(36).toUpperCase();
+    recordOrder({id: orderId, date: new Date().toISOString(), items, total, customer, promo: appliedPromo});
+    cart = {}; appliedPromo = null; saveCart(); renderCart(); renderGrid(); renderAdmin();
+    closeCheckoutForm();
+    document.getElementById("checkout-form").reset();
     document.getElementById("order-id-display").textContent = "Order #" + orderId;
     document.getElementById("confirm-scrim").classList.add("open");
   }
@@ -1376,6 +1633,148 @@
     URL.revokeObjectURL(url);
     toast("Monthly report downloaded");
   }
+
+  // ---------- customer reviews & back-in-stock notify ----------
+  function getCustomerReviews(pid){
+    try{
+      const all = JSON.parse(localStorage.getItem(CUSTOMER_REVIEWS_KEY)) || {};
+      return all[pid] || [];
+    }catch(e){ return []; }
+  }
+  function addCustomerReview(pid, review){
+    let all = {};
+    try{ all = JSON.parse(localStorage.getItem(CUSTOMER_REVIEWS_KEY)) || {}; }catch(e){ all = {}; }
+    if(!all[pid]) all[pid] = [];
+    all[pid].unshift(review);
+    localStorage.setItem(CUSTOMER_REVIEWS_KEY, JSON.stringify(all));
+  }
+  function saveNotifyRequest(pid, email){
+    if(!email) return;
+    let all = [];
+    try{ all = JSON.parse(localStorage.getItem(NOTIFY_KEY)) || []; }catch(e){ all = []; }
+    all.push({pid, email, date: new Date().toISOString()});
+    localStorage.setItem(NOTIFY_KEY, JSON.stringify(all));
+  }
+
+
+  let wishlist = [];
+  function loadWishlist(){
+    try{ wishlist = JSON.parse(localStorage.getItem(WISHLIST_KEY)) || []; }catch(e){ wishlist = []; }
+  }
+  function saveWishlist(){ localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist)); }
+  function isWished(pid){ return wishlist.includes(pid); }
+  function toggleWish(pid){
+    if(isWished(pid)){ wishlist = wishlist.filter(id=>id!==pid); toast("Removed from wishlist"); }
+    else { wishlist.push(pid); toast("Added to wishlist"); }
+    saveWishlist();
+    updateWishlistCount();
+    renderGrid();
+    if(currentView === "pdp") renderPDP();
+    if(currentView === "wishlist") renderWishlistView(false);
+  }
+  function updateWishlistCount(){ document.getElementById("wishlist-count").textContent = wishlist.length; }
+
+  function showWishlistView(pushHash){
+    showView("wishlist");
+    if(pushHash !== false) setHash("#/wishlist");
+    renderWishlistView(false);
+  }
+  function renderWishlistView(){
+    const grid = document.getElementById("wishlist-grid");
+    const items = products.filter(p => isWished(p.id));
+    if(items.length === 0){
+      grid.innerHTML = '<p class="empty-note">Nothing saved yet. Tap the ♡ on any product to add it here.</p>';
+      return;
+    }
+    grid.innerHTML = items.map(p => {
+      const rc = getReviewCount(p);
+      const out = p.stock <= 0;
+      return `
+        <div class="tag-card" data-view="${p.id}">
+          <button class="wish-heart active" data-wish="${p.id}" title="Remove from wishlist">♥</button>
+          <div class="punch"></div>
+          <div class="tile" style="background:${tileColor(p.category)}; overflow:hidden;">${mediaInner(p)}</div>
+          <div class="cat">${p.category} · ${p.pet}</div>
+          <h3>${escapeHtml(p.name)}</h3>
+          ${rc>0 ? `<div><span class="stars">${starString(getRating(p))}</span><span class="review-count">(${rc})</span></div>` : `<div class="no-reviews">No reviews yet</div>`}
+          <div class="row" style="margin-top:8px;"><span class="price">${money(p.price)}</span></div>
+          <div class="row" style="margin-top:12px;">
+            <button class="link-btn" data-view="${p.id}" style="padding-left:0;">View details →</button>
+            <button class="add-btn" data-add="${p.id}" ${out?"disabled":""}>Add</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+    grid.querySelectorAll("[data-add]").forEach(b=> b.addEventListener("click", (e)=>{ e.stopPropagation(); addToCart(b.dataset.add, 1); }));
+    grid.querySelectorAll("[data-wish]").forEach(b=> b.addEventListener("click", (e)=>{ e.stopPropagation(); toggleWish(b.dataset.wish); }));
+    grid.querySelectorAll(".tag-card").forEach(card=> card.addEventListener("click", (e)=>{ if(!e.target.closest("button")) openProductPage(card.dataset.view); }));
+  }
+
+
+  // ---------- policy pages ----------
+  const POLICY_CONTENT = {
+    shipping: {
+      title: "Shipping & Returns",
+      html: `
+        <h2>Shipping</h2>
+        <p>Orders ship within 1-2 business days. Standard delivery across South Africa takes 3-5 business days. Orders over R899 ship free; smaller orders have shipping calculated at checkout.</p>
+        <h2>Returns</h2>
+        <p>Not happy with something? Return it within 30 days of delivery for a full refund, as long as it's unused and in its original packaging. Opened food and treats can't be returned for hygiene reasons unless faulty.</p>
+        <h2>How to start a return</h2>
+        <p>Contact us with your order number and we'll arrange a collection or drop-off point. Refunds are processed within 5-7 business days of us receiving the item back.</p>
+      `
+    },
+    privacy: {
+      title: "Privacy Policy",
+      html: `
+        <h2>What we collect</h2>
+        <p>When you check out, we collect your name, email, phone number, and delivery address to fulfil your order. This is a demo store — this data is stored only in your own browser and is never sent to a server.</p>
+        <h2>How it's used</h2>
+        <p>Order details are used solely to process and track your order, and to look it up later under "My Orders." We don't sell or share your information with third parties.</p>
+        <h2>Your data</h2>
+        <p>Since everything lives in your browser's local storage, clearing your browser data will remove your order history, wishlist, and any reviews you've left.</p>
+      `
+    }
+  };
+  function showPolicyView(slug, pushHash){
+    const policy = POLICY_CONTENT[slug] || POLICY_CONTENT.shipping;
+    showView("policy");
+    if(pushHash !== false) setHash("#/policy/" + slug);
+    document.getElementById("policy-content").innerHTML = `<h1>${policy.title}</h1>${policy.html}`;
+    window.scrollTo({top:0, behavior:"instant"});
+  }
+
+  function showOrdersView(pushHash){
+    showView("orders");
+    if(pushHash !== false) setHash("#/orders");
+    document.getElementById("order-lookup-results").innerHTML = "";
+    document.getElementById("order-lookup-input").value = "";
+  }
+
+  function renderOrderResults(query){
+    const q = query.trim().toLowerCase();
+    const results = document.getElementById("order-lookup-results");
+    if(!q){ results.innerHTML = ""; return; }
+    const matches = orders.filter(o =>
+      (o.customer && o.customer.email && o.customer.email.toLowerCase() === q) ||
+      (o.id && o.id.toLowerCase() === q)
+    ).sort((a,b)=> new Date(b.date) - new Date(a.date));
+    if(matches.length === 0){
+      results.innerHTML = `<p class="empty-note" style="padding:30px 0;">No orders found for "${escapeHtml(query)}". Double-check the email or order number you used at checkout.</p>`;
+      return;
+    }
+    results.innerHTML = matches.map(o => `
+      <div class="order-card">
+        <div class="ohead">
+          <span class="oid">${escapeHtml(o.id || "Order")}</span>
+          <span class="odate">${new Date(o.date).toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"})}</span>
+        </div>
+        ${o.items.map(it => `<div class="oitem"><span>${it.qty} × ${escapeHtml(it.name)}</span><span class="mono">${money(it.price*it.qty)}</span></div>`).join("")}
+        <div class="ototal"><span>Total</span><span class="mono">${money(o.total)}</span></div>
+      </div>
+    `).join("");
+  }
+
 
   // ---------- admin ----------
   function renderAdmin(){
@@ -1577,15 +1976,17 @@
   // ---------- view switching ----------
   function showView(view){
     currentView = view;
-    document.getElementById("shop-view").classList.toggle("hide", view!=="shop");
-    document.getElementById("pdp-view").classList.toggle("hide", view!=="pdp");
-    document.getElementById("admin-view").classList.toggle("hide", view!=="admin");
+    ["shop","pdp","admin","orders","wishlist","policy"].forEach(v=>{
+      const el = document.getElementById(v+"-view");
+      if(el) el.classList.toggle("hide", view!==v);
+    });
     document.getElementById("nav-admin").classList.toggle("active", view==="admin");
-    document.getElementById("nav-shop").classList.toggle("active", view!=="admin");
+    document.getElementById("nav-shop").classList.toggle("active", view==="shop" || view==="pdp");
   }
-  function goToShop(){ showView("shop"); renderPetTabs(); renderPetTiles(); renderHero(); renderShopBreadcrumb(); renderFilters(); renderGrid(); window.scrollTo({top:0, behavior:"instant"}); }
-  function showAdmin(){
+  function goToShop(pushHash){ showView("shop"); if(pushHash!==false) setHash("#/"); renderPetTabs(); renderPetTiles(); renderHero(); renderShopBreadcrumb(); renderFilters(); renderGrid(); window.scrollTo({top:0, behavior:"instant"}); }
+  function showAdmin(pushHash){
     showView("admin");
+    if(pushHash!==false) setHash("#/admin");
     renderAdmin();
     bannerDraft = siteBanner ? {...siteBanner} : null;
     document.getElementById("banner-url").value = (siteBanner && !siteBanner.src.startsWith("data:")) ? siteBanner.src : "";
@@ -1594,6 +1995,21 @@
     document.getElementById("promo-text").value = promoMessages.join("\n");
     showAdminSub("photos");
   }
+
+  // ---------- routing (shareable links) ----------
+  function setHash(h){ if(location.hash !== h) history.pushState(null, "", h); }
+  function applyRoute(){
+    const hash = location.hash.replace(/^#\/?/, "");
+    const parts = hash.split("/").filter(Boolean);
+    if(parts[0] === "product" && parts[1] && byId(parts[1])){ openProductPage(parts[1], false); }
+    else if(parts[0] === "admin"){ showAdmin(false); }
+    else if(parts[0] === "orders"){ showOrdersView(false); }
+    else if(parts[0] === "wishlist"){ showWishlistView(false); }
+    else if(parts[0] === "policy" && parts[1]){ showPolicyView(parts[1], false); }
+    else { goToShop(false); }
+  }
+  window.addEventListener("popstate", applyRoute);
+
 
   function showAdminSub(sub){
     ["photos","banner","inventory","reports"].forEach(s=>{
@@ -1700,16 +2116,34 @@
 
 
 
-  function renderAll(){ renderPetTabs(); renderPetTiles(); renderHero(); renderShopBreadcrumb(); renderFilters(); renderGrid(); renderCart(); renderAdmin(); }
+  function renderAll(){ renderPetTabs(); renderPetTiles(); renderHero(); renderShopBreadcrumb(); renderFilters(); renderGrid(); renderCart(); renderAdmin(); updateWishlistCount(); }
 
   // ---------- wire up ----------
-  document.getElementById("nav-shop").addEventListener("click", goToShop);
-  document.getElementById("nav-admin").addEventListener("click", showAdmin);
+  document.getElementById("nav-shop").addEventListener("click", ()=> goToShop());
+  document.getElementById("nav-admin").addEventListener("click", ()=> showAdmin());
   document.getElementById("open-cart").addEventListener("click", openCart);
   document.getElementById("close-cart").addEventListener("click", closeCart);
   document.getElementById("cart-scrim").addEventListener("click", closeCart);
-  document.getElementById("checkout-btn").addEventListener("click", checkout);
+  document.getElementById("checkout-btn").addEventListener("click", openCheckoutForm);
+  document.getElementById("co-cancel").addEventListener("click", ()=>{ closeCheckoutForm(); openCart(); });
+  document.getElementById("checkout-form-scrim").addEventListener("click", (e)=>{ if(e.target.id === "checkout-form-scrim") closeCheckoutForm(); });
+  document.getElementById("checkout-form").addEventListener("submit", finalizeCheckout);
+  document.getElementById("promo-code-apply").addEventListener("click", applyPromoCode);
+  document.getElementById("promo-code-input").addEventListener("keydown", (e)=>{ if(e.key==="Enter"){ e.preventDefault(); applyPromoCode(); } });
   document.getElementById("confirm-close").addEventListener("click", ()=> document.getElementById("confirm-scrim").classList.remove("open"));
+  document.getElementById("order-lookup-btn").addEventListener("click", ()=> renderOrderResults(document.getElementById("order-lookup-input").value));
+  document.getElementById("order-lookup-input").addEventListener("keydown", (e)=>{ if(e.key==="Enter"){ e.preventDefault(); renderOrderResults(e.target.value); } });
+
+  document.getElementById("open-wishlist").addEventListener("click", ()=> showWishlistView());
+  document.querySelectorAll("[data-footer-nav]").forEach(b=> b.addEventListener("click", ()=>{
+    const target = b.dataset.footerNav;
+    if(target === "orders") showOrdersView();
+    else if(target === "wishlist") showWishlistView();
+    else if(target.startsWith("policy/")) showPolicyView(target.split("/")[1]);
+  }));
+  document.getElementById("footer-contact").addEventListener("click", ()=> document.getElementById("contact-scrim").classList.add("open"));
+  document.getElementById("contact-close").addEventListener("click", ()=> document.getElementById("contact-scrim").classList.remove("open"));
+  document.getElementById("contact-scrim").addEventListener("click", (e)=>{ if(e.target.id === "contact-scrim") document.getElementById("contact-scrim").classList.remove("open"); });
 
   document.getElementById("btn-add-product").addEventListener("click", ()=> openProductForm(null));
   document.getElementById("pf-cancel").addEventListener("click", closeProductForm);
@@ -1798,10 +2232,12 @@
   loadBanner();
   loadPromoMessages();
   loadOrders();
+  loadWishlist();
   Object.keys(cart).forEach(id=>{ if(!byId(id)) delete cart[id]; });
   renderAll();
   renderSiteBanner();
   initPromoBar();
+  applyRoute();
 })();
 </script>
 
