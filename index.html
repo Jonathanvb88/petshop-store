@@ -405,12 +405,12 @@
         <div class="admin-head">
           <div>
             <h1 style="font-size:1.4rem;">Homepage banner</h1>
-            <p>Upload a short phone video or a poster image to show at the top of the site, in place of the default promo strip.</p>
+            <p>Upload a short phone video or a poster image to show near the top of the site, just below the promo strip.</p>
           </div>
         </div>
         <div class="banner-editor">
           <div class="banner-preview" id="banner-preview">
-            <span class="banner-preview-empty">No banner set — the animated promo strip is showing instead</span>
+            <span class="banner-preview-empty">No banner set — only the promo strip will show</span>
           </div>
           <div class="banner-controls">
             <div class="field">
@@ -443,7 +443,7 @@
         <div class="admin-head">
           <div>
             <h1 style="font-size:1.4rem;">Top promo strip</h1>
-            <p>Edit the rotating messages shown in the purple strip at the very top (used whenever no banner photo/video is set).</p>
+            <p>Edit the rotating messages shown in the purple strip at the very top of every page.</p>
           </div>
         </div>
         <div class="field">
@@ -746,15 +746,12 @@
 
   function renderSiteBanner(){
     const el = document.getElementById("site-banner");
-    const promo = document.getElementById("promo-bar");
     if(!siteBanner || !siteBanner.src){
       el.classList.add("hide");
       el.innerHTML = "";
-      promo.classList.remove("hide");
       requestAnimationFrame(syncPromoHeight);
       return;
     }
-    promo.classList.add("hide");
     el.classList.remove("hide");
     if(siteBanner.type === "video"){
       el.innerHTML = `<div class="site-banner-inner"><video src="${attrSafe(siteBanner.src)}" autoplay muted loop playsinline preload="auto"></video></div>`;
@@ -768,7 +765,7 @@
     const preview = document.getElementById("banner-preview");
     const current = bannerDraft;
     if(!current || !current.src){
-      preview.innerHTML = '<span class="banner-preview-empty">No banner set — the animated promo strip is showing instead</span>';
+      preview.innerHTML = '<span class="banner-preview-empty">No banner set — only the promo strip will show</span>';
       return;
     }
     if(current.type === "video"){
