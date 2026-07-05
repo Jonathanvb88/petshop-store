@@ -424,9 +424,10 @@
     <div class="admin-head">
       <div>
         <h1>Inventory</h1>
-        <p>Add products one at a time, or import a batch by CSV.</p>
+        <p>Add products one at a time, or import a batch by CSV. New to CSV uploads? Download the template first — it shows the exact columns expected.</p>
       </div>
       <div class="toolbar">
+        <button class="btn-sm" id="btn-template">⤓ Download template</button>
         <button class="btn-sm" id="btn-export">↓ Export CSV</button>
         <button class="btn-sm" id="btn-import-trigger">↑ Import CSV</button>
         <input type="file" id="csv-input" accept=".csv" />
@@ -1248,16 +1249,32 @@
   }
   function csvEscape(v){ v = String(v ?? ""); if(/[",\n]/.test(v)) return '"' + v.replace(/"/g,'""') + '"'; return v; }
 
+  function downloadCsvFile(lines, filename){
+    const blob = new Blob([lines.join("\n")], {type:"text/csv"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
+
+  function downloadTemplate(){
+    const headers = ["sku","name","pet","category","price","stock","icon","image","desc","specs"];
+    const exampleRows = [
+      ["EXAMPLE-001","Example Dog Toy","Dog","Toys","149","20","🎾","","A short one-sentence description.","Spec one | Spec two | Spec three"],
+      ["EXAMPLE-002","Example Cat Treat","Cat","Food","89","35","🐟","https://example.com/photo.jpg","Another short description.","Spec one | Spec two"]
+    ];
+    const lines = [headers.join(",")];
+    exampleRows.forEach(r => lines.push(r.map(csvEscape).join(",")));
+    downloadCsvFile(lines, "rainbows-pets-upload-template.csv");
+    toast("Template downloaded — fill it in and use Import CSV");
+  }
+
   function exportCSV(){
     const headers = ["sku","name","pet","category","price","stock","icon","image","desc","specs"];
     const lines = [headers.join(",")];
     products.forEach(p=>{
       lines.push(headers.map(h=> h==="specs" ? csvEscape((p.specs||[]).join(" | ")) : csvEscape(p[h])).join(","));
     });
-    const blob = new Blob([lines.join("\n")], {type:"text/csv"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = "rainbows-pets-products.csv";
-    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    downloadCsvFile(lines, "rainbows-pets-products.csv");
     toast("Exported " + products.length + " products");
   }
 
@@ -1351,6 +1368,7 @@
     updatePfPreview();
   });
 
+  document.getElementById("btn-template").addEventListener("click", downloadTemplate);
   document.getElementById("btn-export").addEventListener("click", exportCSV);
 
   document.getElementById("banner-upload-trigger").addEventListener("click", ()=> document.getElementById("banner-file").click());
