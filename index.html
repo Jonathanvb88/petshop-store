@@ -2183,7 +2183,7 @@
     if(e.target.matches("[data-photo-file]")){
       const file = e.target.files[0];
       if(!file) return;
-      if(file.size > 2*1024*1024){ toast("Please use an image under 2MB"); e.target.value=""; return; }
+      if(file.size > 5*1024*1024){ toast("That photo is too large (over 5MB) — try a smaller one or a hosted image URL instead"); e.target.value=""; return; }
       const pid = e.target.dataset.photoFile;
       const reader = new FileReader();
       reader.onload = (ev)=> addProductImage(pid, ev.target.result);
