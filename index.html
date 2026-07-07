@@ -254,7 +254,7 @@
   .photo-thumb-strip{ display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
   .photo-slot{ width:56px; height:56px; border-radius:8px; flex-shrink:0; position:relative; overflow:hidden; }
   .photo-slot.filled{ border:1px solid var(--card-line); }
-  .photo-slot.filled img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .photo-slot.filled img{ width:100%; height:100%; object-fit:contain; display:block; }
   .photo-slot-remove{ position:absolute; top:2px; right:2px; width:18px; height:18px; border-radius:50%; background:#00000090; color:#fff; border:none; font-size:0.6rem; line-height:1; display:flex; align-items:center; justify-content:center; padding:0; }
   .photo-slot-remove:hover{ background:#c2410c; }
   .photo-slot.empty{ border:1.5px dashed var(--card-line); background:transparent; color:var(--sage); font-size:1.3rem; display:flex; align-items:center; justify-content:center; }
@@ -949,7 +949,7 @@
   function mediaInner(p){
     const imgs = getImages(p);
     if(imgs.length){
-      return `<img src="${attrSafe(imgs[0])}" alt="${escapeHtml(p.name||'')}" style="width:100%;height:100%;object-fit:cover;" onerror="this.outerHTML='${(p.icon||'🐾')}';" />`;
+      return `<img src="${attrSafe(imgs[0])}" alt="${escapeHtml(p.name||'')}" style="width:100%;height:100%;object-fit:contain;" onerror="this.outerHTML='${(p.icon||'🐾')}';" />`;
     }
     return p.icon || "🐾";
   }
@@ -1227,9 +1227,9 @@
     content.innerHTML = `
       <div class="pdp-grid">
         <div>
-          <div class="gallery-main" id="gallery-main" style="background:${tileColor(p.category)}; overflow:hidden;">${gallery[0].type==='image' ? `<img src="${attrSafe(gallery[0].value)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:cover;" />` : gallery[0].value}</div>
+          <div class="gallery-main" id="gallery-main" style="background:${tileColor(p.category)}; overflow:hidden;">${gallery[0].type==='image' ? `<img src="${attrSafe(gallery[0].value)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:contain;" />` : gallery[0].value}</div>
           <div class="gallery-thumbs" id="gallery-thumbs">
-            ${gallery.map((g,i)=>`<button data-thumb="${i}" class="${i===0?'active':''}" style="background:${tileColor(p.category)}; overflow:hidden;">${g.type==='image' ? `<img src="${attrSafe(g.value)}" alt="" style="width:100%;height:100%;object-fit:cover;" />` : g.value}</button>`).join("")}
+            ${gallery.map((g,i)=>`<button data-thumb="${i}" class="${i===0?'active':''}" style="background:${tileColor(p.category)}; overflow:hidden;">${g.type==='image' ? `<img src="${attrSafe(g.value)}" alt="" style="width:100%;height:100%;object-fit:contain;" />` : g.value}</button>`).join("")}
           </div>
         </div>
         <div class="pdp-info">
@@ -1285,7 +1285,7 @@
     content.querySelectorAll("[data-thumb]").forEach(b=> b.addEventListener("click", ()=>{
       const g = gallery[+b.dataset.thumb];
       const main = document.getElementById("gallery-main");
-      main.innerHTML = g.type==='image' ? `<img src="${attrSafe(g.value)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:cover;" />` : g.value;
+      main.innerHTML = g.type==='image' ? `<img src="${attrSafe(g.value)}" alt="${escapeHtml(p.name)}" style="width:100%;height:100%;object-fit:contain;" />` : g.value;
       content.querySelectorAll("[data-thumb]").forEach(x=>x.classList.remove("active"));
       b.classList.add("active");
     }));
@@ -1862,7 +1862,7 @@
   function updatePfPreview(imgs, iconVal){
     const preview = document.getElementById("pf-image-preview");
     if(imgs && imgs.length){
-      preview.innerHTML = `<img src="${attrSafe(imgs[0])}" alt="" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.textContent='${iconVal||'🐾'}';" />`;
+      preview.innerHTML = `<img src="${attrSafe(imgs[0])}" alt="" style="width:100%;height:100%;object-fit:contain;" onerror="this.parentElement.textContent='${iconVal||'🐾'}';" />`;
     } else {
       preview.textContent = iconVal || "🐾";
     }
